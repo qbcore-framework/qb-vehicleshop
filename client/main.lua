@@ -1,6 +1,5 @@
 PlayerJob = {}
 isLoggedIn = true
-local inVehicleShop = false
 
 vehicleCategorys = {
     ["coupes"] = {
@@ -49,6 +48,16 @@ vehicleCategorys = {
     },
 }
 
+AddEventHandler('onResourceStart', function(resource)
+    if resource == GetCurrentResourceName() then
+        Wait(200)
+        QBCore.Functions.GetPlayerData(function(PlayerData)
+            PlayerJob = PlayerData.job
+        end)
+        isLoggedIn = true
+    end
+end)
+
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.GetPlayerData(function(PlayerData)
@@ -65,11 +74,9 @@ end)
 Citizen.CreateThread(function()
     Citizen.Wait(1000)
     for k, v in pairs(QBCore.Shared.Vehicles) do
-        if v["shop"] == "pdm" then
-            for cat,_ in pairs(vehicleCategorys) do
-                if QBCore.Shared.Vehicles[k]["category"] == cat then
-                    table.insert(vehicleCategorys[cat].vehicles, QBCore.Shared.Vehicles[k])
-                end
+        for cat,_ in pairs(vehicleCategorys) do
+            if QBCore.Shared.Vehicles[k]["category"] == cat then
+                table.insert(vehicleCategorys[cat].vehicles, QBCore.Shared.Vehicles[k])
             end
         end
     end
@@ -106,22 +113,16 @@ RegisterNUICallback('buyVehicle', function(data)
     openVehicleShop(false)
 end)
 
-RegisterNetEvent('qb-vehicleshop:client:spawnBoughtVehicle')
-AddEventHandler('qb-vehicleshop:client:spawnBoughtVehicle', function(vehicle)
-    QBCore.Functions.SpawnVehicle(vehicle, function(veh)
-        SetEntityHeading(veh, QB.SpawnPoint.w)
-        TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-    end, QB.SpawnPoint, true)
-end)
-
 Citizen.CreateThread(function()
-    Dealer = AddBlipForCoord(QB.VehicleShop)
-    SetBlipSprite (Dealer, 326)
-    SetBlipDisplay(Dealer, 4)
-    SetBlipScale  (Dealer, 0.75)
-    SetBlipAsShortRange(Dealer, true)
-    SetBlipColour(Dealer, 3)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentSubstringPlayerName("Premium Deluxe Motorsport")
-    EndTextCommandSetBlipName(Dealer)
+    for i = 1, #QB.VehicleShops do
+        local Dealer = AddBlipForCoord(QB.VehicleShops[i]["Location"])
+        SetBlipSprite (Dealer, 326)
+        SetBlipDisplay(Dealer, 4)
+        SetBlipScale  (Dealer, 0.75)
+        SetBlipAsShortRange(Dealer, true)
+        SetBlipColour(Dealer, 3)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentSubstringPlayerName(QB.VehicleShops[i]["ShopLabel"])
+        EndTextCommandSetBlipName(Dealer)
+    end
 end)
