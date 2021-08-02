@@ -103,21 +103,15 @@ function GetRandomLetter(length)
 end
 
 RegisterServerEvent('qb-vehicleshop:server:setShowroomCarInUse')
-AddEventHandler('qb-vehicleshop:server:setShowroomCarInUse', function(showroomVehicle, bool)
-    QB.ShowroomVehicles[showroomVehicle].inUse = bool
+AddEventHandler('qb-vehicleshop:server:setShowroomCarInUse', function(showroomVehicle, bool, currentindex)
+    QB.VehicleShops[currentindex]["ShowroomVehicles"][showroomVehicle].inUse = bool
     TriggerClientEvent('qb-vehicleshop:client:setShowroomCarInUse', -1, showroomVehicle, bool)
 end)
 
 RegisterServerEvent('qb-vehicleshop:server:setShowroomVehicle')
-AddEventHandler('qb-vehicleshop:server:setShowroomVehicle', function(vData, k)
-    QB.ShowroomVehicles[k].chosenVehicle = vData
+AddEventHandler('qb-vehicleshop:server:setShowroomVehicle', function(vData, k, currentindex)
+    QB.VehicleShops[currentindex]["ShowroomVehicles"][k].chosenVehicle = vData
     TriggerClientEvent('qb-vehicleshop:client:setShowroomVehicle', -1, vData, k)
-end)
-
-RegisterServerEvent('qb-vehicleshop:server:SetCustomShowroomVeh')
-AddEventHandler('qb-vehicleshop:server:SetCustomShowroomVeh', function(vData, k)
-    QB.ShowroomVehicles[k].vehicle = vData
-    TriggerClientEvent('qb-vehicleshop:client:SetCustomShowroomVeh', -1, vData, k)
 end)
 
 QBCore.Commands.Add("sell", "Sell Vehicle (Car Dealer Only)", {}, false, function(source, args)
