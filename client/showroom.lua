@@ -9,11 +9,10 @@ Citizen.CreateThread(function()
 
     for k, v in pairs(vehicleCategorys) do
         for i = 1, #QB.VehicleShops do
-            local toInsertCategory = k
             local toInsertVehicles = {}
             local vehiclesTable = v.vehicles
 
-            if QB.VehicleShops[i]["Categories"][toInsertCategory] then
+            if QB.VehicleShops[i]["Categories"][k] then
                 for k, v in pairs(vehiclesTable) do
                     if v["shop"] == QB.VehicleShops[i]["ShopName"] then
                         table.insert(toInsertVehicles, vehiclesTable[k])
@@ -27,7 +26,7 @@ Citizen.CreateThread(function()
                 })
 
                 QB.VehicleShops[i]["menu"][k] = {
-                    title = toInsertCategory,
+                    title = k,
                     name = v.label,
                     buttons = toInsertVehicles
                 }
