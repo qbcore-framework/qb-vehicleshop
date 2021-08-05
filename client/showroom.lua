@@ -160,36 +160,16 @@ end
 function ButtonSelected(button)
 	local ped = PlayerPedId()
 	local this = QB.VehicleShops[ClosestShopIndex]["currentmenu"]
-    local btn = button["name"]
+    	local btn = button["name"]
     
 	if this == "main" then
 		if btn == "Categories" then
 			OpenMenu('vehicles')
 		end
 	elseif this == "vehicles" then
-		if btn == "Sports" then
-			OpenMenu('sports')
-		elseif btn == "Sedans" then
-			OpenMenu('sedans')
-		elseif btn == "Compacts" then
-			OpenMenu('compacts')
-		elseif btn == "Coupes" then
-			OpenMenu('coupes')
-		elseif btn == "Sports Classics" then
-			OpenMenu("sportsclassics")
-		elseif btn == "Super" then
-			OpenMenu('super')
-		elseif btn == "Muscle" then
-			OpenMenu('muscle')
-		elseif btn == "Offroad" then
-			OpenMenu('offroad')
-		elseif btn == "SUVs" then
-			OpenMenu('suvs')
-		elseif btn == "Motorcycles" then
-			OpenMenu('motorcycles')
-		elseif btn == "Vans" then
-			OpenMenu('vans')
-		end
+        	if btn == QB.VehicleShops[ClosestShopIndex]["Categories"][btn] then
+            		OpenMenu(btn)
+        	end
 	end
 end
 
