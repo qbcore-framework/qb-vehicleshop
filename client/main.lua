@@ -585,9 +585,9 @@ end
 
 RegisterNetEvent('qb-vehicleshop:client:SetVehicleBuying')
 AddEventHandler('qb-vehicleshop:client:SetVehicleBuying', function(slot)
-    QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle][slot].inUse = true
+    QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][slot].inUse = true
     SetTimeout((60 * 1000) * 5, function()
-        QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle][slot].inUse = false
+        QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][slot].inUse = false
     end)
 end)
 
