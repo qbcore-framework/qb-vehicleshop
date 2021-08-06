@@ -5,53 +5,16 @@ local testritveh = 0
 local fakecar = {model = '', car = nil}
 local PlayerJob = {}
 local isLoggedIn = false
+local Categories = {}
 
-local vehicleCategorys = {
-    ["coupes"] = {
-        label = "Coupes",
-        vehicles = {}
-    },
-    ["sedans"] = {
-        label = "Sedans",
-        vehicles = {}
-    },
-    ["muscle"] = {
-        label = "Muscle",
-        vehicles = {}
-    },
-    ["suvs"] = {
-        label = "SUVs",
-        vehicles = {}
-    },
-    ["compacts"] = {
-        label = "Compacts",
-        vehicles = {}
-    },
-    ["vans"] = {
-        label = "Vans",
-        vehicles = {}
-    },
-    ["super"] = {
-        label = "Super",
-        vehicles = {}
-    },
-    ["sports"] = {
-        label = "Sports",
-        vehicles = {}
-    },
-    ["sportsclassics"] = {
-        label = "Sports Classics",
-        vehicles = {}
-    },
-    ["motorcycles"] = {
-        label = "Motorcycles",
-        vehicles = {}
-    },
-    ["offroad"] = {
-        label = "Offroad",
-        vehicles = {}
-    },
-}
+for i = 1, #QB.VehicleShops do
+    for k, v in pairs(QB.VehicleShops[i]["Categories"]) do
+        Categories[k] = {
+            label = v,
+            vehicles = {}
+        }
+    end
+end
 
 AddEventHandler('onResourceStart', function(resource)
     if resource == GetCurrentResourceName() then
@@ -81,9 +44,9 @@ end)
 Citizen.CreateThread(function()
     Citizen.Wait(1000)
     for k, v in pairs(QBCore.Shared.Vehicles) do
-        for cat,_ in pairs(vehicleCategorys) do
+        for cat,_ in pairs(Categories) do
             if QBCore.Shared.Vehicles[k]["category"] == cat then
-                table.insert(vehicleCategorys[cat].vehicles, QBCore.Shared.Vehicles[k])
+                table.insert(Categories[cat].vehicles, QBCore.Shared.Vehicles[k])
             end
         end
     end
@@ -106,7 +69,7 @@ end)
 Citizen.CreateThread(function()
     Citizen.Wait(2000)
 
-    for k, v in pairs(vehicleCategorys) do
+    for k, v in pairs(Categories) do
         for i = 1, #QB.VehicleShops do
             local toInsertVehicles = {}
             local vehiclesTable = v.vehicles
