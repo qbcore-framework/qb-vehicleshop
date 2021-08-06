@@ -6,15 +6,15 @@ QB.VehicleShops = {
         -- Vehicle Shop options
         ["ShopName"] = "pdm",
         ["ShopLabel"] = "Premium Deluxe Motorsport",
-        ["MenuTitle"] = "Premium Deluxe Motorsport",
         ["Categories"] = {
             ["sports"]  = "Sports",
             ["super"]   = "Super",
             ["sedans"]  = "Sedans",
             ["coupes"]  = "Coupes",
-            ["suvs"]    = "SUV's",
+            ["suvs"]    = "SUVs",
             ["offroad"] = "Offroad",
         },
+        ["TestDriveTimeLimit"] = 3,
         ["Location"] = vector3(-56.71, -1096.6, 25.44),
         ["ReturnLocation"] = vector3(-768.15, -233.1, 37.07),
         ["VehicleSpawn"] = vector4(-56.79, -1109.85, 26.43, 71.5),
@@ -110,6 +110,7 @@ QB.VehicleShops = {
             ["super"]  = "Super",
             ["sports"]  = "Sports",
         },
+        ["TestDriveTimeLimit"] = 3, -- minutes
         ["Location"] = vector3(-63.59, 68.25, 73.06),
         ["ReturnLocation"] = vector3(-768.15, -233.1, 37.07),
         ["VehicleSpawn"] = vector4(-67.33, 82.17, 71.13, 64.51),
