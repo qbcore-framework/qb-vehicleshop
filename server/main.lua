@@ -127,11 +127,30 @@ AddEventHandler('qb-vehicleshop:server:setShowroomVehicle', function(vData, k, c
     TriggerClientEvent('qb-vehicleshop:client:setShowroomVehicle', -1, vData, k)
 end)
 
-QBCore.Commands.Add("sell", "Sell Vehicle (Car Dealer Only)", {}, false, function(source, args)
+function CheckOwnedJob(source, grade)
+    local ownedjob = false
     local Player = QBCore.Functions.GetPlayer(source)
+
+    for k, v in pairs(QB.VehicleShops) do
+        if v["OwnedJob"] then
+            if v["OwnedJob"] == Player.PlayerData.job.name then
+                if grade ~= nil and grade == Player.PlayerData.job.grade.level then
+                    ownedjob = true
+                elseif grade == nil then
+                    ownedjob = true
+                end
+                break
+            end
+        end
+    end
+
+    return ownedjob
+end
+
+QBCore.Commands.Add("sell", "Sell Vehicle (Car Dealer Only)", {{name="ID", help="ID of Player to sell to"}}, true, function(source, args)
     local TargetId = tonumber(args[1])
 
-    if Player.PlayerData.job.name == "cardealer" then
+    if CheckOwnedJob(source) then
         if TargetId ~= nil then
             if #(GetEntityCoords(GetPlayerPed(source)) - GetEntityCoords(GetPlayerPed(TargetId))) < 3.0 then
                 TriggerClientEvent('qb-vehicleshop:client:SellCustomVehicle', source, TargetId)
@@ -142,18 +161,15 @@ QBCore.Commands.Add("sell", "Sell Vehicle (Car Dealer Only)", {}, false, functio
             TriggerClientEvent('QBCore:Notify', source, 'You must provide a Player ID!', 'error')
         end
     else
-        TriggerClientEvent('QBCore:Notify', source, 'You Are Not A Car Dealer', 'error')
+        TriggerClientEvent('QBCore:Notify', source, "You don't have access to this command", 'error')
     end
 end)
 
 QBCore.Commands.Add("testdrive", "Test Drive Vehicle (Car Dealer Only)", {}, false, function(source, args)
-    local Player = QBCore.Functions.GetPlayer(source)
-    local TargetId = args[1]
-
-    if Player.PlayerData.job.name == "cardealer" then
+    if CheckOwnedJob(source) then
         TriggerClientEvent('qb-vehicleshop:client:DoTestrit', source, GeneratePlate())
     else
-        TriggerClientEvent('QBCore:Notify', source, 'You Are Not A Car Dealer', 'error')
+        TriggerClientEvent('QBCore:Notify', source, "You don't have access to this command", 'error')
     end
 end)
 
