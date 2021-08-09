@@ -219,7 +219,7 @@ Citizen.CreateThread(function()
                             DrawText3Ds(QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.x, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.y, QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].coords.z + 1.6, '~g~7~w~ - Confirm / ~r~8~w~ - Cancel - ~g~($'..QBCore.Shared.Vehicles[QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].chosenVehicle].price..',-)')
                             
                             if IsDisabledControlJustPressed(0, 161) then
-                                TriggerServerEvent('qb-vehicleshop:server:ConfirmVehicle', QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle])
+                                TriggerServerEvent('qb-vehicleshop:server:ConfirmVehicle', QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle], QB.VehicleShops[ClosestShopIndex]["Garage"])
                                 QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].buying = false
                             end
 
