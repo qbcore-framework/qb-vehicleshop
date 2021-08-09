@@ -166,7 +166,7 @@ RegisterServerEvent('qb-vehicleshop:server:ConfirmVehicle')
 AddEventHandler('qb-vehicleshop:server:ConfirmVehicle', function(ShowroomVehicle)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local VehPrice = QBCore.Shared.Vehicles[ShowroomVehicle.vehicle].price
+    local VehPrice = QBCore.Shared.Vehicles[ShowroomVehicle.chosenVehicle].price
     local plate = GeneratePlate()
 
     if Player.PlayerData.money.cash >= VehPrice then
@@ -175,8 +175,8 @@ AddEventHandler('qb-vehicleshop:server:ConfirmVehicle', function(ShowroomVehicle
         exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
             ['@license'] = Player.PlayerData.license,
             ['@citizenid'] = Player.PlayerData.citizenid,
-            ['@vehicle'] = ShowroomVehicle.vehicle,
-            ['@hash'] = GetHashKey(ShowroomVehicle.vehicle),
+            ['@vehicle'] = ShowroomVehicle.chosenVehicle,
+            ['@hash'] = GetHashKey(ShowroomVehicle.chosenVehicle),
             ['@mods'] = '{}',
             ['@plate'] = plate,
             ['@state'] = 0
@@ -187,8 +187,8 @@ AddEventHandler('qb-vehicleshop:server:ConfirmVehicle', function(ShowroomVehicle
         exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
             ['@license'] = Player.PlayerData.license,
             ['@citizenid'] = Player.PlayerData.citizenid,
-            ['@vehicle'] = ShowroomVehicle.vehicle,
-            ['@hash'] = GetHashKey(ShowroomVehicle.vehicle),
+            ['@vehicle'] = ShowroomVehicle.chosenVehicle,
+            ['@hash'] = GetHashKey(ShowroomVehicle.chosenVehicle),
             ['@mods'] = '{}',
             ['@plate'] = plate,
             ['@state'] = 0
