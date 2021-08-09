@@ -287,7 +287,7 @@ Citizen.CreateThread(function()
                         end
                         if IsControlJustPressed(1,188) then
                             if modelLoaded then
-                                if QB.VehicleShops[ClosestShopIndex]["selectedbutton"] > 0 then
+                                if QB.VehicleShops[ClosestShopIndex]["selectedbutton"] > 1 then
                                     QB.VehicleShops[ClosestShopIndex]["selectedbutton"] = QB.VehicleShops[ClosestShopIndex]["selectedbutton"] -1
                                     if buttoncount > 10 and QB.VehicleShops[ClosestShopIndex]["selectedbutton"] < QB.VehicleShops[ClosestShopIndex]["menu"]["from"] then
                                         QB.VehicleShops[ClosestShopIndex]["menu"]["from"] = QB.VehicleShops[ClosestShopIndex]["menu"]["from"] -1
@@ -582,7 +582,6 @@ function drawMenuRight(txt,x,y,selected)
 	SetTextFont(menu["font"])
 	SetTextProportional(0)
 	SetTextScale(0.2, 0.2)
-	--SetTextRightJustify(1)
 	if selected then
 		SetTextColour(0,0,0, 255)
 	else
