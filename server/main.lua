@@ -7,34 +7,6 @@ for i = 97, 122 do table.insert(Charset, string.char(i)) end
 
 -- code
 
-RegisterNetEvent('qb-vehicleshop:server:buyVehicle')
-AddEventHandler('qb-vehicleshop:server:buyVehicle', function(vehicleData, garage)
-    local src = source
-    local pData = QBCore.Functions.GetPlayer(src)
-    local cid = pData.PlayerData.citizenid
-    local vData = QBCore.Shared.Vehicles[vehicleData["model"]]
-    local balance = pData.PlayerData.money["bank"]
-    
-    if (balance - vData["price"]) >= 0 then
-        local plate = GeneratePlate()
-        exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @garage)', {
-            ['@license'] = pData.PlayerData.license,
-            ['@citizenid'] = cid,
-            ['@vehicle'] = vData["model"],
-            ['@hash'] = GetHashKey(vData["model"]),
-            ['@mods'] = '{}',
-            ['@plate'] = plate,
-            ['@garage'] = garage
-        })
-        TriggerClientEvent("QBCore:Notify", src, "Success! Your vehicle has been delivered to "..QB.GarageLabel[garage], "success", 5000)
-        pData.Functions.RemoveMoney('bank', vData["price"], "vehicle-bought-in-shop")
-        TriggerEvent("qb-log:server:sendLog", cid, "vehiclebought", {model=vData["model"], name=vData["name"], from="garage", location=QB.GarageLabel[garage], moneyType="bank", price=vData["price"], plate=plate})
-        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle purchased (garage)", "green", "**"..GetPlayerName(src) .. "** bought a " .. vData["name"] .. " for $" .. vData["price"])
-    else
-		TriggerClientEvent("QBCore:Notify", src, "You don't have enough money, you're missing $"..format_thousand(vData["price"] - balance), "error", 5000)
-    end
-end)
-
 RegisterNetEvent('qb-vehicleshop:server:buyShowroomVehicle')
 AddEventHandler('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle)
     local src = source
