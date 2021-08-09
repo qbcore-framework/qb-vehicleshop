@@ -36,7 +36,7 @@ AddEventHandler('qb-vehicleshop:server:buyVehicle', function(vehicleData, garage
 end)
 
 RegisterNetEvent('qb-vehicleshop:server:buyShowroomVehicle')
-AddEventHandler('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle, class)
+AddEventHandler('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle)
     local src = source
     local pData = QBCore.Functions.GetPlayer(src)
     local cid = pData.PlayerData.citizenid
@@ -73,8 +73,10 @@ AddEventHandler('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle, cl
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('bank', vehiclePrice, "vehicle-bought-in-showroom")
         TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle purchased (showroom)", "green", "**"..GetPlayerName(src) .. "** bought a " .. QBCore.Shared.Vehicles[vehicle]["name"] .. " for $" .. vehiclePrice .. " from the bank")
-    else
-        TriggerClientEvent("QBCore:Notify", src, "You don't have enough money, you're missing $"..format_thousand(vehiclePrice - balance), "error", 5000)
+    elseif (cash - vehiclePrice) < 0 then
+        TriggerClientEvent("QBCore:Notify", src, "You don't have enough money, you're missing $"..format_thousand(vehiclePrice - cash).." cash", "error", 5000)
+    elseif (bank - vehiclePrice) < 0 then
+        TriggerClientEvent("QBCore:Notify", src, "You don't have enough money, you're missing $"..format_thousand(vehiclePrice - bank).." in the bank", "error", 5000)
     end
 end)
 
@@ -176,44 +178,4 @@ end)
 RegisterServerEvent('qb-vehicleshop:server:SellCustomVehicle')
 AddEventHandler('qb-vehicleshop:server:SellCustomVehicle', function(TargetId, ShowroomSlot)
     TriggerClientEvent('qb-vehicleshop:client:SetVehicleBuying', TargetId, ShowroomSlot)
-end)
-
-RegisterServerEvent('qb-vehicleshop:server:ConfirmVehicle')
-AddEventHandler('qb-vehicleshop:server:ConfirmVehicle', function(ShowroomVehicle)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local VehPrice = QBCore.Shared.Vehicles[ShowroomVehicle.chosenVehicle].price
-    local plate = GeneratePlate()
-
-    if Player.PlayerData.money.cash >= VehPrice then
-        Player.Functions.RemoveMoney('cash', VehPrice)
-        TriggerClientEvent('qb-vehicleshop:client:ConfirmVehicle', src, ShowroomVehicle, plate)
-        exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
-            ['@license'] = Player.PlayerData.license,
-            ['@citizenid'] = Player.PlayerData.citizenid,
-            ['@vehicle'] = ShowroomVehicle.chosenVehicle,
-            ['@hash'] = GetHashKey(ShowroomVehicle.chosenVehicle),
-            ['@mods'] = '{}',
-            ['@plate'] = plate,
-            ['@state'] = 0
-        })
-    elseif Player.PlayerData.money.bank >= VehPrice then
-        Player.Functions.RemoveMoney('bank', VehPrice)
-        TriggerClientEvent('qb-vehicleshop:client:ConfirmVehicle', src, ShowroomVehicle, plate)
-        exports.ghmattimysql:execute('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (@license, @citizenid, @vehicle, @hash, @mods, @plate, @state)', {
-            ['@license'] = Player.PlayerData.license,
-            ['@citizenid'] = Player.PlayerData.citizenid,
-            ['@vehicle'] = ShowroomVehicle.chosenVehicle,
-            ['@hash'] = GetHashKey(ShowroomVehicle.chosenVehicle),
-            ['@mods'] = '{}',
-            ['@plate'] = plate,
-            ['@state'] = 0
-        })
-    else
-        if Player.PlayerData.money.cash > Player.PlayerData.money.bank then
-            TriggerClientEvent('QBCore:Notify', src, 'You don\'t have enough money.. You are missing ('..(Player.PlayerData.money.cash - VehPrice)..',-)')
-        else
-            TriggerClientEvent('QBCore:Notify', src, 'You don\'t have enough money.. You are missing ('..(Player.PlayerData.money.bank - VehPrice)..',-)')
-        end
-    end
 end)
