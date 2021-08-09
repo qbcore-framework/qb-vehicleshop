@@ -434,7 +434,6 @@ AddEventHandler('qb-vehicleshop:client:buyShowroomVehicle', function(vehicle, pl
         SetEntityAsMissionEntity(veh, true, true)
         TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
         TriggerServerEvent("qb-vehicletuning:server:SaveVehicleProps", QBCore.Functions.GetVehicleProperties(veh))
-        SetEntityAsMissionEntity(veh, true, true)
     end, QB.VehicleShops[ClosestShopIndex]["VehicleSpawn"], true)
 end)
 
