@@ -324,7 +324,7 @@ Citizen.CreateThread(function()
                     if IsDisabledControlJustPressed(0, 161) then
                         if buySure then
                             local class = QBCore.Shared.Vehicles[QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["category"]
-                            TriggerServerEvent('qb-vehicleshop:server:buyShowroomVehicle', QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].chosenVehicle, class, QB.VehicleShops[ClosestShopIndex]["OwnedJob"])
+                            TriggerServerEvent('qb-vehicleshop:server:buyShowroomVehicle', QB.VehicleShops[ClosestShopIndex]["ShowroomVehicles"][ClosestVehicle].chosenVehicle)
                             buySure = false
                         end
                     end
