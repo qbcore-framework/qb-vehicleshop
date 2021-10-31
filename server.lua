@@ -436,6 +436,23 @@ RegisterNetEvent('qb-vehicleshop:server:checkFinance', function()
     end
 end)
 
+-- Check if car is financed (fix for bug exploit in vehicle sales)
+RegisterNetEvent('qb-vehicleshop:server:checkifFinanced', function()
+    local _financed = nil
+    local src = source
+    local player = QBCore.Functions.GetPlayer(src)
+    local result = exports.oxmysql:executeSync('SELECT * FROM player_vehicles WHERE citizenid = ?', {player.PlayerData.citizenid})
+    for k,v in pairs(result) do
+        if v.balance >= 1 then
+            _financed = true
+        else 
+            _financed = false
+        end
+    end
+    print(_financed)
+    TriggerClientEvent('qb-vehiclesales:client:checkifFinanced', src, _financed)
+end)
+
 -- Transfer vehicle to player in passenger seat
 QBCore.Commands.Add('transferVehicle', 'Gift or sell your vehicle', {{ name = 'amount', help = 'Sell amount' }}, false, function(source, args)
     local src = source
