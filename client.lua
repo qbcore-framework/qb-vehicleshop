@@ -285,7 +285,7 @@ function createManagedShop(shopShape, name, jobName)
             ClosestShop = name
             insideZones[name] = true
             CreateThread(function()
-                while insideZones[name] and PlayerData.job.name == Config.Shops[name]['Job'] do
+                while insideZones[name] and PlayerData.job ~= nil and PlayerData.job.name == Config.Shops[name]['Job'] do
                     setClosestShowroomVehicle()
                     vehicleMenu = {
                         {
