@@ -107,8 +107,10 @@ local function getVehBrand()
     return QBCore.Shared.Vehicles[Config.Shops[getShopInsideOf()]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["brand"]
 end
 
-local function setClosestShowroomVehicle()
-    local pos = GetEntityCoords(PlayerPedId(), true)
+local function setClosestShowroomVehicle(pos)
+    if not pos then  -- if position not set use player position
+        pos = GetEntityCoords(PlayerPedId(), true)
+    end
     local current = nil
     local dist = nil
     local closestShop = getShopInsideOf()
@@ -216,6 +218,101 @@ local function createVehZones(shopName) -- This will create an entity zone if co
     end
 end
 
+function generateFreeVehMenu() 
+    local closestShop = getShopInsideOf()
+    vehicleMenu = {
+        {
+            isMenuHeader = true,
+            header = getVehBrand():upper().. ' '..getVehName():upper().. ' - $' ..getVehPrice(),
+        },
+        {
+            header = 'Test Drive',
+            txt = 'Test drive currently selected vehicle',
+            params = {
+                event = 'qb-vehicleshop:client:TestDrive',
+            }
+        },
+        {
+            header = "Buy Vehicle",
+            txt = 'Purchase currently selected vehicle',
+            params = {
+                isServer = true,
+                event = 'qb-vehicleshop:server:buyShowroomVehicle',
+                args = {
+                    buyVehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
+                }
+            }
+        },
+        {
+            header = 'Finance Vehicle',
+            txt = 'Finance currently selected vehicle',
+            params = {
+                event = 'qb-vehicleshop:client:openFinance',
+                args = {
+                    price = getVehPrice(),
+                    buyVehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
+                }
+            }
+        },
+        {
+            header = 'Swap Vehicle',
+            txt = 'Change currently selected vehicle',
+            params = {
+                event = 'qb-vehicleshop:client:vehCategories',
+            }
+        },
+    }
+end
+
+function generateManagedVehMenu() 
+    local closestShop = getShopInsideOf()
+    vehicleMenu = {
+        {
+            isMenuHeader = true,
+            header = getVehBrand():upper().. ' '..getVehName():upper().. ' - $' ..getVehPrice(),
+        },
+        {
+            header = 'Test Drive',
+            txt = 'Allow player for test drive',
+            params = {
+                event = 'qb-vehicleshop:client:openIdMenu',
+                args = {
+                    vehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
+                    type = 'testDrive'
+                }
+            }
+        },
+        {
+            header = "Sell Vehicle",
+            txt = 'Sell vehicle to Player',
+            params = {
+                event = 'qb-vehicleshop:client:openIdMenu',
+                args = {
+                    vehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
+                   type = 'sellVehicle'
+                }
+            }
+        },
+        {
+            header = 'Finance Vehicle',
+            txt = 'Finance vehicle to Player',
+            params = {
+                event = 'qb-vehicleshop:client:openCustomFinance',
+                args = {
+                    price = getVehPrice(),
+                    vehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
+                }
+            }
+        },
+        {
+            header = 'Swap Vehicle',
+            txt = 'Change currently selected vehicle',
+            params = {
+                event = 'qb-vehicleshop:client:vehCategories',
+            }
+        },
+    }
+end
 -- Zones
 
 function createFreeUseShop(shopShape, name)
@@ -229,50 +326,9 @@ function createFreeUseShop(shopShape, name)
         if isPointInside then
             insideZones[name] = true
             CreateThread(function()
-                while insideZones[name] do
+                while insideZones[name] and not Config.UsingTarget do
                     setClosestShowroomVehicle()
-                    vehicleMenu = {
-                        {
-                            isMenuHeader = true,
-                            header = getVehBrand():upper().. ' '..getVehName():upper().. ' - $' ..getVehPrice(),
-                        },
-                        {
-                            header = 'Test Drive',
-                            txt = 'Test drive currently selected vehicle',
-                            params = {
-                                event = 'qb-vehicleshop:client:TestDrive',
-                            }
-                        },
-                        {
-                            header = "Buy Vehicle",
-                            txt = 'Purchase currently selected vehicle',
-                            params = {
-                                isServer = true,
-                                event = 'qb-vehicleshop:server:buyShowroomVehicle',
-                                args = {
-                                    buyVehicle = Config.Shops[getShopInsideOf()]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
-                                }
-                            }
-                        },
-                        {
-                            header = 'Finance Vehicle',
-                            txt = 'Finance currently selected vehicle',
-                            params = {
-                                event = 'qb-vehicleshop:client:openFinance',
-                                args = {
-                                    price = getVehPrice(),
-                                    buyVehicle = Config.Shops[getShopInsideOf()]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
-                                }
-                            }
-                        },
-                        {
-                            header = 'Swap Vehicle',
-                            txt = 'Change currently selected vehicle',
-                            params = {
-                                event = 'qb-vehicleshop:client:vehCategories',
-                            }
-                        },
-                    }
+                    generateFreeVehMenu()
                     Wait(1000)
                 end
             end)
@@ -294,55 +350,9 @@ function createManagedShop(shopShape, name, jobName)
         if isPointInside then
             insideZones[name] = true
             CreateThread(function()
-                while insideZones[name] and PlayerData.job ~= nil and PlayerData.job.name == Config.Shops[name]['Job'] do
+                while insideZones[name] and PlayerData.job ~= nil and PlayerData.job.name == Config.Shops[name]['Job'] and not Config.UsingTarget do
                     setClosestShowroomVehicle()
-                    local closestShop = getShopInsideOf()
-                    vehicleMenu = {
-                        {
-                            isMenuHeader = true,
-                            header = getVehBrand():upper().. ' '..getVehName():upper().. ' - $' ..getVehPrice(),
-                        },
-                        {
-                            header = 'Test Drive',
-                            txt = 'Allow player for test drive',
-                            params = {
-                                event = 'qb-vehicleshop:client:openIdMenu',
-                                args = {
-                                    vehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
-                                    type = 'testDrive'
-                                }
-                            }
-                        },
-                        {
-                            header = "Sell Vehicle",
-                            txt = 'Sell vehicle to Player',
-                            params = {
-                                event = 'qb-vehicleshop:client:openIdMenu',
-                                args = {
-                                    vehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
-                                    type = 'sellVehicle'
-                                }
-                            }
-                        },
-                        {
-                            header = 'Finance Vehicle',
-                            txt = 'Finance vehicle to Player',
-                            params = {
-                                event = 'qb-vehicleshop:client:openCustomFinance',
-                                args = {
-                                    price = getVehPrice(),
-                                    vehicle = Config.Shops[closestShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
-                                }
-                            }
-                        },
-                        {
-                            header = 'Swap Vehicle',
-                            txt = 'Change currently selected vehicle',
-                            params = {
-                                event = 'qb-vehicleshop:client:vehCategories',
-                            }
-                        },
-                    }
+                    generateManagedVehMenu()
                     Wait(1000)
                 end
             end)
@@ -367,7 +377,16 @@ RegisterNetEvent('qb-vehicleshop:client:homeMenu', function()
     exports['qb-menu']:openMenu(vehicleMenu)
 end)
 
-RegisterNetEvent('qb-vehicleshop:client:showVehOptions', function()
+RegisterNetEvent('qb-vehicleshop:client:showVehOptions', function(data)
+    if Config.UsingTarget then
+        setClosestShowroomVehicle(GetEntityCoords(data.entity))
+        local closestShop = Config.Shops[getShopInsideOf()]
+        if closestShop["Type"] == "free-use" then
+            generateFreeVehMenu() -- generate the vehicle menu for the selected vehicle
+        elseif closestShop["Type"] == "managed" and PlayerData.job ~= nil and PlayerData.job.name == closestShop['Job'] then
+            generateManagedVehMenu()
+        end
+    end
     exports['qb-menu']:openMenu(vehicleMenu)
 end)
 
