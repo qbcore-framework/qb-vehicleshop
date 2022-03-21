@@ -143,10 +143,10 @@ RegisterNetEvent('qb-vehicleshop:server:financePayment', function(paymentAmount,
     if newBalance > 0 then
         if player and paymentAmount >= minPayment then
             if cash >= paymentAmount then
-                player.Functions.RemoveMoney('cash', paymentAmount)
+                Player.Functions.RemoveMoney('cash', paymentAmount)
                 MySQL.Async.execute('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', {newBalance, newPayment, newPaymentsLeft, timer, plate})
             elseif bank >= paymentAmount then
-                player.Functions.RemoveMoney('bank', paymentAmount)
+                Player.Functions.RemoveMoney('bank', paymentAmount)
                 MySQL.Async.execute('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', {newBalance, newPayment, newPaymentsLeft, timer, plate})
             else
                 TriggerClientEvent('QBCore:Notify', src, 'Not enough money', 'error')
@@ -170,10 +170,10 @@ RegisterNetEvent('qb-vehicleshop:server:financePaymentFull', function(data)
     local vehPlate = data.vehPlate
     if player and vehBalance ~= 0 then
         if cash >= vehBalance then
-            player.Functions.RemoveMoney('cash', vehBalance)
+            Player.Functions.RemoveMoney('cash', vehBalance)
             MySQL.Async.execute('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', {0, 0, 0, 0, vehPlate})
         elseif bank >= vehBalance then
-            player.Functions.RemoveMoney('bank', vehBalance)
+            Player.Functions.RemoveMoney('bank', vehBalance)
             MySQL.Async.execute('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', {0, 0, 0, 0, vehPlate})
         else
             TriggerClientEvent('QBCore:Notify', src, 'Not enough money', 'error')
@@ -311,7 +311,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             })
             TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', target.PlayerData.source, vehicle, plate)
             target.Functions.RemoveMoney('cash', vehiclePrice, 'vehicle-bought-in-showroom')
-            player.Functions.AddMoney('bank', commission)
+            Player.Functions.AddMoney('bank', commission)
             TriggerClientEvent('QBCore:Notify', src, 'You earned $'..comma_value(commission)..' in commission', 'success')
             TriggerEvent('qb-bossmenu:server:addAccountMoney', player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, 'Congratulations on your purchase!', 'success')
@@ -327,7 +327,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             })
             TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', target.PlayerData.source, vehicle, plate)
             target.Functions.RemoveMoney('bank', vehiclePrice, 'vehicle-bought-in-showroom')
-            player.Functions.AddMoney('bank', commission)
+            Player.Functions.AddMoney('bank', commission)
             TriggerEvent('qb-bossmenu:server:addAccountMoney', player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', src, 'You earned $'..comma_value(commission)..' in commission', 'success')
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, 'Congratulations on your purchase!', 'success')
@@ -381,7 +381,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellfinanceVehicle', function(downPaymen
             })
             TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', target.PlayerData.source, vehicle, plate)
             target.Functions.RemoveMoney('cash', downPayment, 'vehicle-bought-in-showroom')
-            player.Functions.AddMoney('bank', commission)
+            Player.Functions.AddMoney('bank', commission)
             TriggerClientEvent('QBCore:Notify', src, 'You earned $'..comma_value(commission)..' in commission', 'success')
             TriggerEvent('qb-bossmenu:server:addAccountMoney', player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, 'Congratulations on your purchase!', 'success')
@@ -401,7 +401,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellfinanceVehicle', function(downPaymen
             })
             TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', target.PlayerData.source, vehicle, plate)
             target.Functions.RemoveMoney('bank', downPayment, 'vehicle-bought-in-showroom')
-            player.Functions.AddMoney('bank', commission)
+            Player.Functions.AddMoney('bank', commission)
             TriggerClientEvent('QBCore:Notify', src, 'You earned $'..comma_value(commission)..' in commission', 'success')
             TriggerEvent('qb-bossmenu:server:addAccountMoney', player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, 'Congratulations on your purchase!', 'success')
@@ -453,7 +453,7 @@ RegisterNetEvent('qb-vehicleshop:server:transferVehicle', function(plate, buyerI
             if target.Functions.GetMoney('cash') > sellAmount then
                 local targetcid = target.PlayerData.citizenid
                 MySQL.Async.execute('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {targetcid, plate})
-                player.Functions.AddMoney('cash', sellAmount)
+                Player.Functions.AddMoney('cash', sellAmount)
                 TriggerClientEvent('QBCore:Notify', src, 'You sold your vehicle for $'..comma_value(sellAmount), 'success')
                 target.Functions.RemoveMoney('cash', sellAmount)
                 TriggerClientEvent('vehiclekeys:client:SetOwner', target.PlayerData.source, plate)
@@ -461,7 +461,7 @@ RegisterNetEvent('qb-vehicleshop:server:transferVehicle', function(plate, buyerI
             elseif target.Functions.GetMoney('bank') > sellAmount then
                 local targetcid = target.PlayerData.citizenid
                 MySQL.Async.execute('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {targetcid, plate})
-                player.Functions.AddMoney('bank', sellAmount)
+                Player.Functions.AddMoney('bank', sellAmount)
                 TriggerClientEvent('QBCore:Notify', src, 'You sold your vehicle for $'..comma_value(sellAmount), 'success')
                 target.Functions.RemoveMoney('bank', sellAmount)
                 TriggerClientEvent('vehiclekeys:client:SetOwner', target.PlayerData.source, plate)
