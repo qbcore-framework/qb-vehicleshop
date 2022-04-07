@@ -426,15 +426,12 @@ RegisterNetEvent('qb-vehicleshop:server:checkFinance', function()
     if paymentDue then
         TriggerClientEvent('QBCore:Notify', src, 'Your vehicle payment is due within '..Config.PaymentWarning..' minutes')
         Wait(Config.PaymentWarning * 60000)
-        MySQL.Sync.fetchAll('SELECT * FROM player_vehicles WHERE citizenid = ?', {player.PlayerData.citizenid}, function(vehicles)
-            for k,v in pairs(vehicles) do
-                if v.balance >= 1 and v.financetime < 1 then
-                    local plate = v.plate
-                    MySQL.Async.execute('DELETE FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
-                    TriggerClientEvent('QBCore:Notify', src, 'Your vehicle with plate '..plate..' has been repossessed', 'error')
-                end
-            end
-        end)
+        local deleteResult = MySQL.Sync.fetchAll('SELECT * FROM player_vehicles WHERE citizenid = ? AND balance >= 1 AND financetime < 1', {player.PlayerData.citizenid})
+        for k,v in pairs(deleteResult) do
+            local plate = v.plate
+            MySQL.Async.execute('DELETE FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
+            TriggerClientEvent('QBCore:Notify', src, 'Your vehicle with plate '..plate..' has been repossessed', 'error')
+        end
     end
 end)
 
