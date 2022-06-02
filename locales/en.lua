@@ -17,6 +17,7 @@ local Translations = {
         vehinfo = "Couldn\'t get vehicle info",
         notown = "You don\'t own this vehicle",
         buyertoopoor = "The buyer doesn\'t have enough money",
+        nofinanced = "You don't have any financed vehicles",
     },
     success = {
         purchased = "Congratulations on your purchase!",

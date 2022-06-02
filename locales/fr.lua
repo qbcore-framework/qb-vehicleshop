@@ -17,6 +17,7 @@ local Translations = {
         vehinfo = "Impossible d'obtenir les informations du véhicule",
         notown = "Vous ne possédez pas ce véhicule",
         buyertoopoor = "L\'acheteur n'a pas assez d'argent",
+        nofinanced = "Vous n\'avez aucun véhicule financés",
     },
     success = {
         purchased = "Félicitations sur votre achat!",
