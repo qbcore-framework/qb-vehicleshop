@@ -195,10 +195,7 @@ local function createVehZones(shopName, entity)
                     label = Lang:t('general.vehinteraction'),
                     canInteract = function()
                         local closestShop = insideShop
-                        if (closestShop ~= nil) and (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job']) then
-                            return true
-                        end
-                        return false                    
+                        return closestShop and (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job'])
                     end
                 },
             },
