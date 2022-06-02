@@ -34,9 +34,9 @@ end)
 
 local vehHeaderMenu = {
     {
-        header = 'Vehicle Options',
+        header = Lang:t('menus.vehHeader_header'),
+        txt = Lang:t('menus.vehHeader_txt'),
         icon = "fa-solid fa-car",
-        txt = 'Interact with the current vehicle',
         params = {
             event = 'qb-vehicleshop:client:showVehOptions'
         }
@@ -45,8 +45,8 @@ local vehHeaderMenu = {
 
 local financeMenu = {
     {
-        header = 'Financed Vehicles',
-        txt = 'Browse your owned vehicles',
+        header = Lang:t('menus.financed_header'),
+        txt = Lang:t('menus.finance_txt'),
         icon = "fa-solid fa-user-ninja",
         params = {
             event = 'qb-vehicleshop:client:getVehicles'
@@ -56,7 +56,7 @@ local financeMenu = {
 
 local returnTestDrive = {
     {
-        header = 'Finish Test Drive',
+        header = Lang:t('menus.returnTestDrive_header'),
         icon = "fa-solid fa-flag-checkered",
         params = {
             event = 'qb-vehicleshop:client:TestDriveReturn'
@@ -98,7 +98,11 @@ local function getVehPrice()
 end
 
 local function getVehBrand()
-    return QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["brand"]
+    return QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]['brand']
+end
+
+local function getVehWeight()
+    return QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["maxweight"] / 1000
 end
 
 local function setClosestShowroomVehicle()
@@ -128,9 +132,9 @@ local function createTestDriveReturn()
         Config.Shops[insideShop]["ReturnLocation"],
         3.0,
         5.0,
-    {
-        name = "box_zone_testdrive_return_"..insideShop,
-    })
+        {
+            name = "box_zone_testdrive_return_"..insideShop,
+        })
 
     testDriveZone:onPlayerInOut(function(isPointInside)
         if isPointInside and IsPedInAnyVehicle(PlayerPedId()) then
@@ -148,7 +152,7 @@ local function startTestDriveTimer(testDriveTime)
         while inTestDrive do
             if GetGameTimer() < gameTimer + tonumber(1000 * testDriveTime) then
                 local secondsLeft = GetGameTimer() - gameTimer
-                drawTxt('Test Drive Time Remaining: '..math.ceil(testDriveTime - secondsLeft / 1000), 4, 0.5, 0.93, 0.50, 255, 255, 255, 180)
+                drawTxt(Lang:t('general.testdrive_timer')..math.ceil(testDriveTime - secondsLeft / 1000), 4, 0.5, 0.93, 0.50, 255, 255, 255, 180)
             end
             Wait(0)
         end
@@ -188,14 +192,14 @@ local function createVehZones(shopName, entity)
                     type = "client",
                     event = "qb-vehicleshop:client:showVehOptions",
                     icon = "fas fa-car",
-                    label = "Vehicle Interaction",
+                    label = Lang:t('general.vehinteraction'),
                     canInteract = function()
                         local closestShop = insideShop
                         return closestShop and (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job'])
                     end
                 },
             },
-            distance = 2.0
+            distance = 3.0
         })
     end
 end
@@ -219,19 +223,19 @@ function createFreeUseShop(shopShape, name)
                         {
                             isMenuHeader = true,
                             icon = "fa-solid fa-circle-info",
-                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice(),
+                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice()..' - '..getVehWeight()..'kg',
                         },
                         {
-                            header = 'Test Drive',
-                            txt = 'Test drive currently selected vehicle',
+                            header = Lang:t('menus.test_header'),
+                            txt = Lang:t('menus.freeuse_test_txt'),
                             icon = "fa-solid fa-car-on",
                             params = {
                                 event = 'qb-vehicleshop:client:TestDrive',
                             }
                         },
                         {
-                            header = "Buy Vehicle",
-                            txt = 'Purchase currently selected vehicle',
+                            header = Lang:t('menus.freeuse_buy_header'),
+                            txt = Lang:t('menus.freeuse_buy_txt'),
                             icon = "fa-solid fa-hand-holding-dollar",
                             params = {
                                 isServer = true,
@@ -242,8 +246,8 @@ function createFreeUseShop(shopShape, name)
                             }
                         },
                         {
-                            header = 'Finance Vehicle',
-                            txt = 'Finance currently selected vehicle',
+                            header = Lang:t('menus.finance_header'),
+                            txt = Lang:t('menus.freeuse_finance_txt'),
                             icon = "fa-solid fa-coins",
                             params = {
                                 event = 'qb-vehicleshop:client:openFinance',
@@ -254,9 +258,9 @@ function createFreeUseShop(shopShape, name)
                             }
                         },
                         {
+                            header = Lang:t('menus.swap_header'),
+                            txt = Lang:t('menus.swap_txt'),
                             icon = "fa-solid fa-arrow-rotate-left",
-                            header = 'Swap Vehicle',
-                            txt = 'Change currently selected vehicle',
                             params = {
                                 event = 'qb-vehicleshop:client:vehCategories',
                             }
@@ -278,7 +282,7 @@ function createManagedShop(shopShape, name)
         minZ = shopShape.minZ,
         maxZ = shopShape.maxZ
     })
-
+    
     zone:onPlayerInOut(function(isPointInside)
         if isPointInside then
             insideShop = name
@@ -289,11 +293,11 @@ function createManagedShop(shopShape, name)
                         {
                             isMenuHeader = true,
                             icon = "fa-solid fa-circle-info",
-                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice(),
+                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice()..' - '..getVehWeight()..'kg',
                         },
                         {
-                            header = 'Test Drive',
-                            txt = 'Allow player for test drive',
+                            header = Lang:t('menus.test_header'),
+                            txt = Lang:t('menus.managed_test_txt'),
                             icon = "fa-solid fa-user-plus",
                             params = {
                                 event = 'qb-vehicleshop:client:openIdMenu',
@@ -304,8 +308,8 @@ function createManagedShop(shopShape, name)
                             }
                         },
                         {
-                            header = "Sell Vehicle",
-                            txt = 'Sell vehicle to Player',
+                            header = Lang:t('menus.managed_sell_header'),
+                            txt = Lang:t('menus.managed_sell_txt'),
                             icon = "fa-solid fa-cash-register",
                             params = {
                                 event = 'qb-vehicleshop:client:openIdMenu',
@@ -316,8 +320,8 @@ function createManagedShop(shopShape, name)
                             }
                         },
                         {
-                            header = 'Finance Vehicle',
-                            txt = 'Finance vehicle to Player',
+                            header = Lang:t('menus.finance_header'),
+                            txt = Lang:t('menus.managed_finance_txt'),
                             icon = "fa-solid fa-coins",
                             params = {
                                 event = 'qb-vehicleshop:client:openCustomFinance',
@@ -328,9 +332,9 @@ function createManagedShop(shopShape, name)
                             }
                         },
                         {
-                            header = 'Swap Vehicle',
+                            header = Lang:t('menus.swap_header'),
+                            txt = Lang:t('menus.swap_txt'),
                             icon = "fa-solid fa-arrow-rotate-left",
-                            txt = 'Change currently selected vehicle',
                             params = {
                                 event = 'qb-vehicleshop:client:vehCategories',
                             }
@@ -371,28 +375,28 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
         QBCore.Functions.SpawnVehicle(Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle, function(veh)
             local closestShop = insideShop
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-            exports['LegacyFuel']:SetFuel(veh, 100)
+            exports['ps-fuel']:SetFuel(veh, 100)
             SetVehicleNumberPlateText(veh, 'TESTDRIVE')
             SetEntityAsMissionEntity(veh, true, true)
             SetEntityHeading(veh, Config.Shops[closestShop]["TestDriveSpawn"].w)
             TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
             TriggerServerEvent('qb-vehicletuning:server:SaveVehicleProps', QBCore.Functions.GetVehicleProperties(veh))
             testDriveVeh = veh
-            QBCore.Functions.Notify('You have '..Config.Shops[closestShop]["TestDriveTimeLimit"]..' minutes remaining')
+            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[closestShop]["TestDriveTimeLimit"]}))
             SetTimeout(Config.Shops[closestShop]["TestDriveTimeLimit"] * 60000, function()
                 if testDriveVeh ~= 0 then
                     testDriveVeh = 0
                     inTestDrive = false
                     QBCore.Functions.DeleteVehicle(veh)
                     SetEntityCoords(PlayerPedId(), prevCoords)
-                    QBCore.Functions.Notify('Vehicle test drive complete')
+                    QBCore.Functions.Notify(Lang:t('general.freeuse_testdrive_complete'))
                 end
             end)
         end, Config.Shops[insideShop]["TestDriveSpawn"], false)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[insideShop]["TestDriveTimeLimit"] * 60)
     else
-        QBCore.Functions.Notify('Already in test drive', 'error')
+        QBCore.Functions.Notify(Lang:t('error.freeuse_testdrive_alreadyin'), 'error')
     end
 end)
 
@@ -402,28 +406,29 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
         local vehicle = data
         local prevCoords = GetEntityCoords(PlayerPedId())
         QBCore.Functions.SpawnVehicle(vehicle, function(veh)
-            exports['LegacyFuel']:SetFuel(veh, 100)
+            TaskWarpPedIntoVehicle(PlayerPedId(data.playerid), veh, -1)
+            exports['ps-fuel']:SetFuel(veh, 100)
             SetVehicleNumberPlateText(veh, 'TESTDRIVE')
             SetEntityAsMissionEntity(veh, true, true)
             SetEntityHeading(veh, Config.Shops[insideShop]["VehicleSpawn"].w)
             TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
             TriggerServerEvent('qb-vehicletuning:server:SaveVehicleProps', QBCore.Functions.GetVehicleProperties(veh))
             testDriveVeh = veh
-            QBCore.Functions.Notify('You have '..Config.Shops[insideShop]["TestDriveTimeLimit"]..' minutes remaining')
+            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[insideShop]["TestDriveTimeLimit"]}))
             SetTimeout(Config.Shops[insideShop]["TestDriveTimeLimit"] * 60000, function()
                 if testDriveVeh ~= 0 then
                     testDriveVeh = 0
                     inTestDrive = false
                     QBCore.Functions.DeleteVehicle(veh)
                     SetEntityCoords(PlayerPedId(), prevCoords)
-                    QBCore.Functions.Notify('Vehicle test drive complete')
+                    QBCore.Functions.Notify(Lang:t('general.testdrive_complete'))
                 end
             end)
         end, Config.Shops[insideShop]["VehicleSpawn"], false)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[insideShop]["TestDriveTimeLimit"] * 60)
     else
-        QBCore.Functions.Notify('Already in test drive', 'error')
+        QBCore.Functions.Notify(Lang:t('error.testdrive_alreadyin'), 'error')
     end
 end)
 
@@ -437,14 +442,14 @@ RegisterNetEvent('qb-vehicleshop:client:TestDriveReturn', function()
         exports['qb-menu']:closeMenu()
         testDriveZone:destroy()
     else
-        QBCore.Functions.Notify('This is not your test drive vehicle', 'error')
+        QBCore.Functions.Notify(Lang:t('error.testdrive_return'), 'error')
     end
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:vehCategories', function()
     local categoryMenu = {
         {
-            header = 'Go Back',
+            header = Lang:t('menus.goback_header'),
             icon = "fa-solid fa-angle-left",
             params = {
                 event = 'qb-vehicleshop:client:homeMenu'
@@ -469,7 +474,7 @@ end)
 RegisterNetEvent('qb-vehicleshop:client:openVehCats', function(data)
     local vehMenu = {
         {
-            header = 'Go Back',
+            header = Lang:t('menus.goback_header'),
             icon = "fa-solid fa-angle-left",
             params = {
                 event = 'qb-vehicleshop:client:vehCategories'
@@ -480,7 +485,7 @@ RegisterNetEvent('qb-vehicleshop:client:openVehCats', function(data)
         if QBCore.Shared.Vehicles[k]["category"] == data.catName and QBCore.Shared.Vehicles[k]["shop"] == insideShop then
             vehMenu[#vehMenu + 1] = {
                 header = v.name,
-                txt = 'Price: $'..v.price,
+                txt = Lang:t('menus.veh_price')..v.price,
                 icon = "fa-solid fa-car-side",
                 params = {
                     isServer = true,
@@ -500,19 +505,19 @@ end)
 RegisterNetEvent('qb-vehicleshop:client:openFinance', function(data)
     local dialog = exports['qb-input']:ShowInput({
         header = getVehBrand():upper()..' '..data.buyVehicle:upper()..' - $'..data.price,
-        submitText = "Submit",
+        submitText = Lang:t('menus.submit_text'),
         inputs = {
             {
                 type = 'number',
                 isRequired = true,
                 name = 'downPayment',
-                text = 'Down Payment Amount - Min '..Config.MinimumDown..'%'
+                text = Lang:t('menus.financesubmit_downpayment')..Config.MinimumDown..'%'
             },
             {
                 type = 'number',
                 isRequired = true,
                 name = 'paymentAmount',
-                text = 'Total Payments - Max '..Config.MaximumPayments
+                text = Lang:t('menus.financesubmit_totalpayment')..Config.MaximumPayments
             }
         }
     })
@@ -526,22 +531,22 @@ RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
     TriggerEvent('animations:client:EmoteCommandStart', {"tablet2"})
     local dialog = exports['qb-input']:ShowInput({
         header = getVehBrand():upper()..' '..data.vehicle:upper()..' - $'..data.price,
-        submitText = "Submit",
+        submitText = Lang:t('menus.submit_text'),
         inputs = {
             {
                 type = 'number',
                 isRequired = true,
                 name = 'downPayment',
-                text = 'Down Payment Amount - Min 10%'
+                text = Lang:t('menus.financesubmit_downpayment')..Config.MinimumDown..'%'
             },
             {
                 type = 'number',
                 isRequired = true,
                 name = 'paymentAmount',
-                text = 'Total Payments - Max '..Config.MaximumPayments
+                text = Lang:t('menus.financesubmit_totalpayment')..Config.MaximumPayments
             },
             {
-                text = "Server ID (#)",
+                text = Lang:t('menus.submit_ID'),
                 name = "playerid",
                 type = "number",
                 isRequired = true
@@ -588,7 +593,7 @@ end)
 RegisterNetEvent('qb-vehicleshop:client:buyShowroomVehicle', function(vehicle, plate)
     QBCore.Functions.SpawnVehicle(vehicle, function(veh)
         TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-        exports['LegacyFuel']:SetFuel(veh, 100)
+        exports['ps-fuel']:SetFuel(veh, 100)
         SetVehicleNumberPlateText(veh, plate)
         SetEntityHeading(veh, Config.Shops[insideShop]["VehicleSpawn"].w)
         SetEntityAsMissionEntity(veh, true, true)
@@ -606,7 +611,7 @@ RegisterNetEvent('qb-vehicleshop:client:getVehicles', function()
                 local plate = v.plate:upper()
                 ownedVehicles[#ownedVehicles + 1] = {
                     header = name,
-                    txt = 'Plate: '..plate,
+                    txt = Lang:t('menus.veh_platetxt')..plate,
                     icon = "fa-solid fa-car-side",
                     params = {
                         event = 'qb-vehicleshop:client:getVehicleFinance',
@@ -627,7 +632,7 @@ end)
 RegisterNetEvent('qb-vehicleshop:client:getVehicleFinance', function(data)
     local vehFinance = {
         {
-            header = '< Go Back',
+            header = Lang:t('menus.goback_header'),
             params = {
                 event = 'qb-vehicleshop:client:getVehicles'
             }
@@ -635,23 +640,23 @@ RegisterNetEvent('qb-vehicleshop:client:getVehicleFinance', function(data)
         {
             isMenuHeader = true,
             icon = "fa-solid fa-sack-dollar",
-            header = 'Total Balance Remaining',
-            txt = '$'..comma_value(data.balance)
+            header = Lang:t('menus.veh_finance_balance'),
+            txt = Lang:t('menus.veh_finance_currency')..comma_value(data.balance)
         },
         {
             isMenuHeader = true,
             icon = "fa-solid fa-hashtag",
-            header = 'Total Payments Remaining',
+            header = Lang:t('menus.veh_finance_total'),
             txt = data.paymentsLeft
         },
         {
             isMenuHeader = true,
             icon = "fa-solid fa-sack-dollar",
-            header = 'Recurring Payment Amount',
-            txt = '$'..comma_value(data.paymentAmount)
+            header = Lang:t('menus.veh_finance_reccuring'),
+            txt = Lang:t('menus.veh_finance_currency')..comma_value(data.paymentAmount)
         },
         {
-            header = 'Make a payment',
+            header = Lang:t('menus.veh_finance_pay'),
             icon = "fa-solid fa-hand-holding-dollar",
             params = {
                 event = 'qb-vehicleshop:client:financePayment',
@@ -663,7 +668,7 @@ RegisterNetEvent('qb-vehicleshop:client:getVehicleFinance', function(data)
             }
         },
         {
-            header = 'Payoff vehicle',
+            header = Lang:t('menus.veh_finance_payoff'),
             icon = "fa-solid fa-hand-holding-dollar",
             params = {
                 isServer = true,
@@ -680,14 +685,14 @@ end)
 
 RegisterNetEvent('qb-vehicleshop:client:financePayment', function(data)
     local dialog = exports['qb-input']:ShowInput({
-        header = 'Vehicle Payment',
-        submitText = "Make Payment",
+        header = Lang:t('menus.veh_finance'),
+        submitText = Lang:t('menus.veh_finance_pay'),
         inputs = {
             {
                 type = 'number',
                 isRequired = true,
                 name = 'paymentAmount',
-                text = 'Payment Amount ($)'
+                text = Lang:t('menus.veh_finance_payment')
             }
         }
     })
@@ -700,10 +705,10 @@ end)
 RegisterNetEvent('qb-vehicleshop:client:openIdMenu', function(data)
     local dialog = exports['qb-input']:ShowInput({
         header = QBCore.Shared.Vehicles[data.vehicle]["name"],
-        submitText = "Submit",
+        submitText = Lang:t('menus.submit_text'),
         inputs = {
             {
-                text = "Server ID (#)",
+                text = Lang:t('menus.submit_ID'),
                 name = "playerid",
                 type = "number",
                 isRequired = true
@@ -734,7 +739,7 @@ CreateThread(function()
             BeginTextCommandSetBlipName("STRING")
             AddTextComponentSubstringPlayerName(Config.Shops[k]["ShopLabel"])
             EndTextCommandSetBlipName(Dealer)
-        end
+	    end
     end
 end)
 
