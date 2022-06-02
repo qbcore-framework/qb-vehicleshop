@@ -625,7 +625,11 @@ RegisterNetEvent('qb-vehicleshop:client:getVehicles', function()
                 }
             end
         end
-        exports['qb-menu']:openMenu(ownedVehicles)
+              if #ownedVehicles > 0 then
+            exports['qb-menu']:openMenu(ownedVehicles)
+        else
+            QBCore.Functions.Notify(Lang:t('error.nofinanced'), 'error', 7500)
+        end
     end)
 end)
 
