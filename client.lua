@@ -752,6 +752,8 @@ CreateThread(function()
         name = "vehicleshop_financeZone",
         offset = {0.0, 0.0, 0.0},
         scale = {1.0, 1.0, 1.0},
+	    minZ  = Config.FinanceZone.z-1,
+        maxZ  = Config.FinanceZone.z+1,
         debugPoly = false,
     })
 
