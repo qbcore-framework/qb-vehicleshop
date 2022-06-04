@@ -64,7 +64,7 @@ local Translations = {
         submit_ID = "ID du joueur (#)",
     },
     general = {
-        testdrive_timer = "Temps restant: %{time}",
+        testdrive_timer = "Temps restant: ",
         vehinteraction = "Intéraction véhicule",
         testdrive_timenoti = "Il vous reste %{testdrivetime} minutes",
         testdrive_complete = "Vous avez terminé le test",
