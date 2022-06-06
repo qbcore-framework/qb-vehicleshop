@@ -406,7 +406,7 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
         local vehicle = data
         local prevCoords = GetEntityCoords(PlayerPedId())
         QBCore.Functions.SpawnVehicle(vehicle, function(veh)
-            TaskWarpPedIntoVehicle(PlayerPedId(data.playerid), veh, -1)
+            TaskWarpPedIntoVehicle(GetPlayerPed(GetPlayerFromServerId(data.playerid)), veh, -1)
             exports['LegacyFuel']:SetFuel(veh, 100)
             SetVehicleNumberPlateText(veh, 'TESTDRIVE')
             SetEntityAsMissionEntity(veh, true, true)
@@ -625,7 +625,7 @@ RegisterNetEvent('qb-vehicleshop:client:getVehicles', function()
                 }
             end
         end
-              if #ownedVehicles > 0 then
+        if #ownedVehicles > 0 then
             exports['qb-menu']:openMenu(ownedVehicles)
         else
             QBCore.Functions.Notify(Lang:t('error.nofinanced'), 'error', 7500)
