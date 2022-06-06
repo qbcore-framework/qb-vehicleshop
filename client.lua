@@ -101,10 +101,6 @@ local function getVehBrand()
     return QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]['brand']
 end
 
-local function getVehWeight()
-    return QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["maxweight"] / 1000
-end
-
 local function setClosestShowroomVehicle()
     local pos = GetEntityCoords(PlayerPedId(), true)
     local current = nil
@@ -223,7 +219,7 @@ function createFreeUseShop(shopShape, name)
                         {
                             isMenuHeader = true,
                             icon = "fa-solid fa-circle-info",
-                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice()..' - '..getVehWeight()..'kg',
+                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice(),
                         },
                         {
                             header = Lang:t('menus.test_header'),
@@ -293,7 +289,7 @@ function createManagedShop(shopShape, name)
                         {
                             isMenuHeader = true,
                             icon = "fa-solid fa-circle-info",
-                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice()..' - '..getVehWeight()..'kg',
+                            header = getVehBrand():upper()..' '..getVehName():upper()..' - $'..getVehPrice(),
                         },
                         {
                             header = Lang:t('menus.test_header'),
