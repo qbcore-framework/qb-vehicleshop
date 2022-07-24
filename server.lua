@@ -235,9 +235,9 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
     local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
     local timer = (Config.PaymentInterval * 60)
     local minDown = tonumber(round((Config.MinimumDown / 100) * vehiclePrice))
-    if downPayment > vehiclePrice then return TriggerClientEvent('QBCore:Notify', src, 'Vehicle is not worth that much', 'error') end
-    if downPayment < minDown then return TriggerClientEvent('QBCore:Notify', src, 'Down payment too small', 'error') end
-    if paymentAmount > Config.MaximumPayments then return TriggerClientEvent('QBCore:Notify', src, 'Exceeded maximum payment amount', 'error') end
+    if downPayment > vehiclePrice then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notworth'), 'error') end
+    if downPayment < minDown then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.downtoosmall'), 'error') end
+    if paymentAmount > Config.MaximumPayments then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.exceededmax'), 'error') end
     local plate = GeneratePlate()
     local balance, vehPaymentAmount = calculateFinance(vehiclePrice, downPayment, paymentAmount)
     if cash >= downPayment then
