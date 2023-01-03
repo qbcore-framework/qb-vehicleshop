@@ -449,7 +449,13 @@ RegisterNetEvent('qb-vehicleshop:server:checkFinance', function()
         local vehicles = MySQL.query.await(query, {player.PlayerData.citizenid})
         for _, v in pairs(vehicles) do
             local plate = v.plate
+            local financetime = MySQL.query.await('SELECT financetime FROM player_vehicles WHERE plate = ?', {plate})
+            local balance = MySQL.query.await('SELECT balance FROM player_vehicles WHERE plate = ?', {plate})
+            local paymentamount = MySQL.query.await('SELECT paymentamount FROM player_vehicles WHERE plate = ?', {plate})
+            local vehicleName = QBCore.Shared.Vehicles[vehicle]['name']
+            local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
             MySQL.query('DELETE FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Removed Financed Vehicle", "red","Vehicle Name "..vehicleName.. "Plate "..plate.. " Vehicle Owner" ..GetPlayerName(src).. "Finance Time" ..financetime.. "Balance".. balance.. "Paid Amount" ..paymentamount.. "Vehicle Price" ..vehiclePrice)
             --MySQL.update('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {'REPO-'..v.citizenid, plate}) -- Use this if you don't want them to be deleted
             TriggerClientEvent('QBCore:Notify', src, Lang:t('error.repossessed', {plate = plate}), 'error')
         end
