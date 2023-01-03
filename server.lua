@@ -196,6 +196,7 @@ RegisterNetEvent('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle)
     local cash = pData.PlayerData.money['cash']
     local bank = pData.PlayerData.money['bank']
     local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
+    local vehicleName = QBCore.Shared.Vehicles[vehicle]['name']
     local plate = GeneratePlate()
     if cash > tonumber(vehiclePrice) then
         MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
@@ -211,6 +212,7 @@ RegisterNetEvent('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle)
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.purchased'), 'success')
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('cash', vehiclePrice, 'vehicle-bought-in-showroom')
+        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Bought A Vehicle", "red","**" .. GetPlayerName(src) .. "** has bought a " .. vehicleName .. " priced at " .. vehiclePrice)
     elseif bank > tonumber(vehiclePrice) then
         MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
             pData.PlayerData.license,
@@ -225,6 +227,7 @@ RegisterNetEvent('qb-vehicleshop:server:buyShowroomVehicle', function(vehicle)
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.purchased'), 'success')
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('bank', vehiclePrice, 'vehicle-bought-in-showroom')
+        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Bought A Vehicle", "red","**" .. GetPlayerName(src) .. "** has bought a " .. vehicleName .. " priced at " .. vehiclePrice)
     else
         TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
     end
@@ -240,6 +243,7 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
     local cash = pData.PlayerData.money['cash']
     local bank = pData.PlayerData.money['bank']
     local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
+    local vehicleName = QBCore.Shared.Vehicles[vehicle]['name']
     local timer = (Config.PaymentInterval * 60)
     local minDown = tonumber(round((Config.MinimumDown / 100) * vehiclePrice))
     if downPayment > vehiclePrice then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notworth'), 'error') end
@@ -265,6 +269,7 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.purchased'), 'success')
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('cash', downPayment, 'vehicle-bought-in-showroom')
+        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle", "green","**" .. GetPlayerName(src) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at".. downPayment)
     elseif bank >= downPayment then
         MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state, balance, paymentamount, paymentsleft, financetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', {
             pData.PlayerData.license,
@@ -283,6 +288,7 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.purchased'), 'success')
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('bank', downPayment, 'vehicle-bought-in-showroom')
+        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle", "green","**" .. GetPlayerName(src) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at".. downPayment)
     else
         TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
     end
@@ -305,6 +311,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
         local bank = target.PlayerData.money['bank']
         local vehicle = data
         local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
+        local vehicleName = QBCore.Shared.Vehicles[vehicle]['name']
         local commission = round(vehiclePrice * Config.Commission)
         local plate = GeneratePlate()
         if cash >= tonumber(vehiclePrice) then
@@ -324,6 +331,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Bought A Vehicle From Dealer", "red","**" .. GetPlayerName(target.PlayerData.source) .. "** has bought a " .. vehicleName .. " priced at " .. vehiclePrice.. "by " .. GetPlayerName(source))
         elseif bank >= tonumber(vehiclePrice) then
             MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
                 target.PlayerData.license,
@@ -341,6 +349,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Bought A Vehicle From Dealer", "red","**" .. GetPlayerName(target.PlayerData.source) .. "** has bought a " .. vehicleName .. " priced at " .. vehiclePrice.. "by " .. GetPlayerName(source))
         else
             TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
         end
@@ -367,6 +376,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellfinanceVehicle', function(downPaymen
         local cash = target.PlayerData.money['cash']
         local bank = target.PlayerData.money['bank']
         local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
+        local vehicleName = QBCore.Shared.Vehicles[vehicle]['name']
         local timer = (Config.PaymentInterval * 60)
         local minDown = tonumber(round((Config.MinimumDown / 100) * vehiclePrice))
         if downPayment > vehiclePrice then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notworth'), 'error') end
@@ -396,6 +406,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellfinanceVehicle', function(downPaymen
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle By A Dealer", "green","**" .. GetPlayerName(target.PlayerData.source) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at".. downPayment.. "by " .. GetPlayerName(source))
         elseif bank >= downPayment then
             MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state, balance, paymentamount, paymentsleft, financetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', {
                 target.PlayerData.license,
@@ -417,6 +428,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellfinanceVehicle', function(downPaymen
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle By A Dealer", "green","**" .. GetPlayerName(target.PlayerData.source) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at".. downPayment.. "by " .. GetPlayerName(source))
         else
             TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
         end
