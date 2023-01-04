@@ -269,7 +269,7 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.purchased'), 'success')
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('cash', downPayment, 'vehicle-bought-in-showroom')
-        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle", "green","**" .. GetPlayerName(src) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at".. downPayment)
+        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle", "green","**" .. GetPlayerName(src) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at ".. downPayment)
     elseif bank >= downPayment then
         MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state, balance, paymentamount, paymentsleft, financetime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', {
             pData.PlayerData.license,
@@ -288,7 +288,7 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
         TriggerClientEvent('QBCore:Notify', src, Lang:t('success.purchased'), 'success')
         TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', src, vehicle, plate)
         pData.Functions.RemoveMoney('bank', downPayment, 'vehicle-bought-in-showroom')
-        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle", "green","**" .. GetPlayerName(src) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at".. downPayment)
+        TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Financed A Vehicle", "green","**" .. GetPlayerName(src) .. "** has Financed a " .. vehicleName .. " priced at " .. vehiclePrice.. " Down Payment at ".. downPayment)
     else
         TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
     end
