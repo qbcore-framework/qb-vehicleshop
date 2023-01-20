@@ -8,6 +8,7 @@ local testDriveVeh, inTestDrive = 0, false
 local ClosestVehicle = 1
 local zones = {}
 local insideShop, tempShop = nil, nil
+local message = nil
 
 -- Handlers
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
@@ -205,7 +206,7 @@ local function createVehZones(shopName, entity)
 end
 
 -- Zones
-function createFreeUseShop(shopShape, name)
+local function createFreeUseShop(shopShape, name)
     local zone = PolyZone:Create(shopShape, {
         name = name,
         minZ = shopShape.minZ,
@@ -274,8 +275,41 @@ function createFreeUseShop(shopShape, name)
         end
     end)
 end
-
-function createManagedShop(shopShape, name)
+local function getCategoryLabel(cat)
+    --DO NOT EDIT catlist--
+    local catlist = {
+        ["compacts"] = "Compacts",
+        ["sedans"] = "Sedans",
+        ["suvs"] = "SUVs",
+        ["coupes"] = "Coupes",
+        ["muscle"] = "Muscle",
+        ["sportsclassics"] = "Classic Sports Cars",
+        ["sports"] = "Sports Cars",
+        ["super"] = "Super Cars",
+        ["motorcycles"] = "Motorcycles",
+        ["offroad"] = "Off-Road",
+        ["industrial"] = "Industrial",
+        ["utility"] = "Utility",
+        ["vans"] = "Vans",
+        ["cycles"] = "Bicycles",
+        ["boats"] = "Boats",
+        ["helicopters"] = "Helicopters",
+        ["planes"] = "Planes",
+        ["service"] = "Service",
+        ["emergency"] = "Emergency",
+        ["military"] = "Military",
+        ["commercial"] = "Commercial",
+        ["trains"] = "Trains",
+        ["openwheel"] = "Open Wheel"
+    }
+    if not catlist[cat] then
+        message = '^3Warning: ["category"] = "' .. cat .. '" in vehicle.lua is mislabeled and must match vehicleClass in vehicles.meta and with fivem https://docs.fivem.net/natives/?_0x29439776AAA00A62^0'
+        TriggerServerEvent('vehicleshop:server:alert',message)
+        return cat
+    end
+    return catlist[cat]
+end
+local function createManagedShop(shopShape, name)
     local zone = PolyZone:Create(shopShape, {
         name = name,
         minZ = shopShape.minZ,
@@ -470,6 +504,7 @@ RegisterNetEvent('qb-vehicleshop:client:TestDriveReturn', function()
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:vehCategories', function()
+    local catLabel
 	local catmenu = {}
     local categoryMenu = {
         {
@@ -484,11 +519,26 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function()
         if type(QBCore.Shared.Vehicles[k]["shop"]) == 'table' then
             for _, shop in pairs(QBCore.Shared.Vehicles[k]["shop"]) do
                 if shop == insideShop then
-                    catmenu[v.category] = v.category
+                    if v.categoryLabel then
+                        catmenu[v.categoryLabel] = v.categoryLabel
+                    else
+                        message = '^3Warning: ["CategoryLabel"] missing in qb-core/shared/vehicles.lua under ^0' .. v.model
+                        TriggerServerEvent('vehicleshop:server:alert',message)
+                        catLabel = getCategoryLabel(v.category)
+                        catmenu[catLabel] = catLabel
+                    end
                 end
             end
         elseif QBCore.Shared.Vehicles[k]["shop"] == insideShop then
+            if v.categoryLabel then
+                catmenu[v.categoryLabel] = v.categoryLabel
+            else
+                message = '^3Warning: ["CategoryLabel"] missing in qb-core/shared/vehicles.lua under ^0' .. v.model
+                TriggerServerEvent('vehicleshop:server:alert',message)
+                catLabel = getCategoryLabel(v.category)
+                catmenu[catLabel] = catLabel
                 catmenu[v.category] = v.category
+            end
         end
     end
     for k, v in pairs(catmenu) do
@@ -507,6 +557,7 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function()
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:openVehCats', function(data)
+    local testcat
     local vehMenu = {
         {
             header = Lang:t('menus.goback_header'),
@@ -517,7 +568,12 @@ RegisterNetEvent('qb-vehicleshop:client:openVehCats', function(data)
         }
     }
     for k, v in pairs(QBCore.Shared.Vehicles) do
-        if QBCore.Shared.Vehicles[k]["category"] == data.catName then
+        if v.categoryLabel then
+            testcat = QBCore.Shared.Vehicles[k].categoryLabel
+        else
+            testcat = getCategoryLabel(QBCore.Shared.Vehicles[k].category)
+        end
+        if testcat == data.catName then
             if type(QBCore.Shared.Vehicles[k]["shop"]) == 'table' then
                 for _, shop in pairs(QBCore.Shared.Vehicles[k]["shop"]) do
                     if shop == insideShop then
