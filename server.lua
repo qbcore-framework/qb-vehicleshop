@@ -96,7 +96,7 @@ local function JobsPlateGen(res)
     QBCore.Debug("here " .. plate:upper())
     return plate:upper()
 end
-exports("JobsPlateGen",JobsPlateGen)
+exports("JobsPlateGen", JobsPlateGen)
 
 local function comma_value(amount)
     local formatted = amount
