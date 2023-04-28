@@ -39,8 +39,8 @@ Config.Shops = {
         ['ShowroomVehicles'] = {
             [1] = {
                 coords = vector4(-45.65, -1093.66, 25.44, 69.5), -- where the vehicle will spawn on display
-                defaultVehicle = 'adder', -- Default display vehicle
-                chosenVehicle = 'adder', -- Same as default but is dynamically changed when swapping vehicles
+                defaultVehicle = 'ardent', -- Default display vehicle
+                chosenVehicle = 'ardent', -- Same as default but is dynamically changed when swapping vehicles
             },
             [2] = {
                 coords = vector4(-48.27, -1101.86, 25.44, 294.5),
@@ -49,8 +49,8 @@ Config.Shops = {
             },
             [3] = {
                 coords = vector4(-39.6, -1096.01, 25.44, 66.5),
-                defaultVehicle = 'comet2',
-                chosenVehicle = 'comet2'
+                defaultVehicle = 'coquette',
+                chosenVehicle = 'coquette'
             },
             [4] = {
                 coords = vector4(-51.21, -1096.77, 25.44, 254.5),
@@ -59,8 +59,8 @@ Config.Shops = {
             },
             [5] = {
                 coords = vector4(-40.18, -1104.13, 25.44, 338.5),
-                defaultVehicle = 't20',
-                chosenVehicle = 't20'
+                defaultVehicle = 'rhapsody',
+                chosenVehicle = 'rhapsody'
             },
             [6] = {
                 coords = vector4(-43.31, -1099.02, 25.44, 52.5),
