@@ -18,6 +18,19 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     if not Initialized then Init() end
 end)
 
+AddEventHandler('onResourceStart', function(resource)
+    if resource ~= GetCurrentResourceName() then
+        return
+    end
+    if next(PlayerData) ~= nil and not Initialized then
+        PlayerData = QBCore.Functions.GetPlayerData()
+        local citizenid = PlayerData.citizenid
+        TriggerServerEvent('qb-vehicleshop:server:addPlayer', citizenid)
+        TriggerServerEvent('qb-vehicleshop:server:checkFinance')
+        Init()
+    end
+end)
+
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     PlayerData.job = JobInfo
 end)
@@ -408,7 +421,7 @@ RegisterNetEvent('qb-vehicleshop:client:homeMenu', function()
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:showVehOptions', function()
-    exports['qb-menu']:openMenu(vehicleMenu)
+    exports['qb-menu']:openMenu(vehicleMenu, true, true)
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
