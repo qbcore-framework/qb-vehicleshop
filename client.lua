@@ -18,6 +18,22 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     if not Initialized then Init() end
 end)
 
+AddEventHandler(
+    'onResourceStart',
+    function(resource)
+        if resource ~= GetCurrentResourceName() then
+            return
+        end
+        if next(PlayerData) ~= nil and not Initialized then
+            PlayerData = QBCore.Functions.GetPlayerData()
+            local citizenid = PlayerData.citizenid
+            TriggerServerEvent('qb-vehicleshop:server:addPlayer', citizenid)
+            TriggerServerEvent('qb-vehicleshop:server:checkFinance')
+            Init()
+        end
+    end
+)
+
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     PlayerData.job = JobInfo
 end)
