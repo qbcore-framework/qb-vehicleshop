@@ -431,8 +431,7 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
                 SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
                 TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
                 testDriveVeh = netId
-                QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti',
-                    {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
+                QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
             end, Config.Shops[tempShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
             Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
@@ -646,8 +645,7 @@ RegisterNetEvent('qb-vehicleshop:client:openFinance', function(data)
     })
     if dialog then
         if not dialog.downPayment or not dialog.paymentAmount then return end
-        TriggerServerEvent('qb-vehicleshop:server:financeVehicle', dialog.downPayment, dialog.paymentAmount,
-            data.buyVehicle)
+        TriggerServerEvent('qb-vehicleshop:server:financeVehicle', dialog.downPayment, dialog.paymentAmount, data.buyVehicle)
     end
 end)
 
@@ -680,18 +678,14 @@ RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
     if dialog then
         if not dialog.downPayment or not dialog.paymentAmount or not dialog.playerid then return end
         TriggerEvent('animations:client:EmoteCommandStart', {"c"})
-        TriggerServerEvent('qb-vehicleshop:server:sellfinanceVehicle', dialog.downPayment, dialog.paymentAmount,
-            data.vehicle, dialog.playerid)
+        TriggerServerEvent('qb-vehicleshop:server:sellfinanceVehicle', dialog.downPayment, dialog.paymentAmount, data.vehicle, dialog.playerid)
     end
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:swapVehicle', function(data)
     local shopName = data.ClosestShop
     if Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].chosenVehicle ~= data.toVehicle then
-        local closestVehicle, closestDistance = QBCore.Functions.GetClosestVehicle(vector3(
-            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x,
-            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y,
-            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z))
+        local closestVehicle, closestDistance = QBCore.Functions.GetClosestVehicle(vector3(Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z))
         if closestVehicle == 0 then return end
         if closestDistance < 5 then DeleteEntity(closestVehicle) end
         while DoesEntityExist(closestVehicle) do
@@ -703,9 +697,7 @@ RegisterNetEvent('qb-vehicleshop:client:swapVehicle', function(data)
         while not HasModelLoaded(model) do
             Wait(50)
         end
-        local veh = CreateVehicle(model, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x,
-            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y,
-            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z, false, false)
+        local veh = CreateVehicle(model, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z, false, false)
         while not DoesEntityExist(veh) do
             Wait(50)
         end
