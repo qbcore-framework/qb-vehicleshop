@@ -73,7 +73,7 @@ local function drawTxt(text, font, x, y, scale, r, g, b, a)
     DrawText(x, y)
 end
 
-function tablelength(T)
+local function tablelength(T)
     local count = 0
     for _ in pairs(T) do
         count = count + 1
@@ -98,7 +98,8 @@ local function getVehName()
 end
 
 local function getVehPrice()
-    return comma_value(QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["price"])
+    return comma_value(QBCore.Shared.Vehicles
+        [Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["price"])
 end
 
 local function getVehBrand()
@@ -149,7 +150,7 @@ end
 local function startTestDriveTimer(testDriveTime, prevCoords)
     local gameTimer = GetGameTimer()
     CreateThread(function()
-	Wait(2000) -- Avoids the condition to run before entering vehicle
+        Wait(2000) -- Avoids the condition to run before entering vehicle
         while inTestDrive do
             if GetGameTimer() < gameTimer + tonumber(1000 * testDriveTime) then
                 local secondsLeft = GetGameTimer() - gameTimer
@@ -160,7 +161,8 @@ local function startTestDriveTimer(testDriveTime, prevCoords)
                     SetEntityCoords(PlayerPedId(), prevCoords)
                     QBCore.Functions.Notify(Lang:t('general.testdrive_complete'))
                 end
-                drawTxt(Lang:t('general.testdrive_timer') .. math.ceil(testDriveTime - secondsLeft / 1000), 4, 0.5, 0.93, 0.50, 255, 255, 255, 180)
+                drawTxt(Lang:t('general.testdrive_timer') .. math.ceil(testDriveTime - secondsLeft / 1000), 4, 0.5, 0.93,
+                    0.50, 255, 255, 255, 180)
             end
             Wait(0)
         end
@@ -183,7 +185,7 @@ local function createVehZones(shopName, entity)
                     debugPoly = false,
                 })
         end
-        local combo = ComboZone:Create(zones, {name = "vehCombo", debugPoly = false})
+        local combo = ComboZone:Create(zones, { name = "vehCombo", debugPoly = false })
         combo:onPlayerInOut(function(isPointInside)
             if isPointInside then
                 if PlayerData and PlayerData.job and (PlayerData.job.name == Config.Shops[insideShop]['Job'] or Config.Shops[insideShop]['Job'] == 'none') then
@@ -203,7 +205,8 @@ local function createVehZones(shopName, entity)
                     label = Lang:t('general.vehinteraction'),
                     canInteract = function()
                         local closestShop = insideShop
-                        return closestShop and (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job'])
+                        return closestShop and
+                            (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job'])
                     end
                 },
             },
@@ -248,7 +251,8 @@ function createFreeUseShop(shopShape, name)
                                 isServer = true,
                                 event = 'qb-vehicleshop:server:buyShowroomVehicle',
                                 args = {
-                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
+                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle]
+                                        .chosenVehicle
                                 }
                             }
                         },
@@ -260,7 +264,8 @@ function createFreeUseShop(shopShape, name)
                                 event = 'qb-vehicleshop:client:openFinance',
                                 args = {
                                     price = getVehPrice(),
-                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
+                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle]
+                                        .chosenVehicle
                                 }
                             }
                         },
@@ -269,7 +274,8 @@ function createFreeUseShop(shopShape, name)
                             txt = Lang:t('menus.swap_txt'),
                             icon = "fa-solid fa-arrow-rotate-left",
                             params = {
-                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or 'qb-vehicleshop:client:vehCategories',
+                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or
+                                    'qb-vehicleshop:client:vehCategories',
                             }
                         },
                     }
@@ -343,7 +349,8 @@ function createManagedShop(shopShape, name)
                             txt = Lang:t('menus.swap_txt'),
                             icon = "fa-solid fa-arrow-rotate-left",
                             params = {
-                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or 'qb-vehicleshop:client:vehCategories',
+                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or
+                                    'qb-vehicleshop:client:vehCategories',
                             }
                         },
                     }
@@ -371,8 +378,8 @@ function Init()
     CreateThread(function()
         local financeZone = BoxZone:Create(Config.FinanceZone, 2.0, 2.0, {
             name = "vehicleshop_financeZone",
-            offset = {0.0, 0.0, 0.0},
-            scale = {1.0, 1.0, 1.0},
+            offset = { 0.0, 0.0, 0.0 },
+            scale = { 1.0, 1.0, 1.0 },
             minZ = Config.FinanceZone.z - 1,
             maxZ = Config.FinanceZone.z + 1,
             debugPoly = false,
@@ -394,7 +401,9 @@ function Init()
                 while not HasModelLoaded(model) do
                     Wait(0)
                 end
-                local veh = CreateVehicle(model, Config.Shops[k]["ShowroomVehicles"][i].coords.x, Config.Shops[k]["ShowroomVehicles"][i].coords.y, Config.Shops[k]["ShowroomVehicles"][i].coords.z, false, false)
+                local veh = CreateVehicle(model, Config.Shops[k]["ShowroomVehicles"][i].coords.x,
+                    Config.Shops[k]["ShowroomVehicles"][i].coords.y, Config.Shops[k]["ShowroomVehicles"][i].coords.z,
+                    false, false)
                 SetModelAsNoLongerNeeded(model)
                 SetVehicleOnGroundProperly(veh)
                 SetEntityInvincible(veh, true)
@@ -423,16 +432,19 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
     if not inTestDrive and ClosestVehicle ~= 0 then
         inTestDrive = true
         local prevCoords = GetEntityCoords(PlayerPedId())
-        tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
+        tempShop =
+            insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
         QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-            local veh = NetToVeh(netId)
-            exports['LegacyFuel']:SetFuel(veh, 100)
-            SetVehicleNumberPlateText(veh, 'TESTDRIVE')
-            SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
-            TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
-            testDriveVeh = netId
-            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
-        end, Config.Shops[tempShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle, Config.Shops[tempShop]["TestDriveSpawn"], true)
+                local veh = NetToVeh(netId)
+                exports['LegacyFuel']:SetFuel(veh, 100)
+                SetVehicleNumberPlateText(veh, 'TESTDRIVE')
+                SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
+                TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
+                testDriveVeh = netId
+                QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti',
+                    { testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"] }))
+            end, Config.Shops[tempShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
+            Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]["TestDriveTimeLimit"] * 60, prevCoords)
     else
@@ -445,7 +457,8 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
         inTestDrive = true
         local vehicle = data
         local prevCoords = GetEntityCoords(PlayerPedId())
-        tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
+        tempShop =
+            insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
         QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
             local veh = NetToVeh(netId)
             exports['LegacyFuel']:SetFuel(veh, 100)
@@ -453,7 +466,8 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
             SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
             TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
             testDriveVeh = netId
-            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
+            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti',
+                { testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"] }))
         end, vehicle, Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]["TestDriveTimeLimit"] * 60, prevCoords)
@@ -478,7 +492,7 @@ RegisterNetEvent('qb-vehicleshop:client:TestDriveReturn', function()
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:vehCategories', function(data)
-	local catmenu = {}
+    local catmenu = {}
     local firstvalue = nil
     local categoryMenu = {
         {
@@ -489,7 +503,7 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function(data)
             }
         }
     }
-	for k, v in pairs(QBCore.Shared.Vehicles) do
+    for k, v in pairs(QBCore.Shared.Vehicles) do
         if type(QBCore.Shared.Vehicles[k]["shop"]) == 'table' then
             for _, shop in pairs(QBCore.Shared.Vehicles[k]["shop"]) do
                 if shop == insideShop and (not Config.FilterByMake or QBCore.Shared.Vehicles[k]["brand"] == data.make) then
@@ -500,14 +514,14 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function(data)
                 end
             end
         elseif QBCore.Shared.Vehicles[k]["shop"] == insideShop and (not Config.FilterByMake or QBCore.Shared.Vehicles[k]["brand"] == data.make) then
-                catmenu[v.category] = v.category
-                if firstvalue == nil then
-                    firstvalue = v.category
-                end
+            catmenu[v.category] = v.category
+            if firstvalue == nil then
+                firstvalue = v.category
+            end
         end
     end
     if Config.HideCategorySelectForOne and tablelength(catmenu) == 1 then
-        TriggerEvent("qb-vehicleshop:client:openVehCats", {catName = firstvalue, make = data.make, onecat = true})
+        TriggerEvent("qb-vehicleshop:client:openVehCats", { catName = firstvalue, make = data.make, onecat = true })
         return
     end
     for k, v in pairs(catmenu) do
@@ -586,45 +600,42 @@ RegisterNetEvent('qb-vehicleshop:client:openVehCats', function(data)
     exports['qb-menu']:openMenu(vehMenu, Config.SortAlphabetically, true)
 end)
 
-RegisterNetEvent(
-    'qb-vehicleshop:client:vehMakes',
-    function()
-        local makmenu = {}
-        local makeMenu = {
-            {
-                header = Lang:t('menus.goback_header'),
-                icon = "fa-solid fa-angle-left",
-                params = {
-                    event = 'qb-vehicleshop:client:homeMenu'
+RegisterNetEvent('qb-vehicleshop:client:vehMakes', function()
+    local makmenu = {}
+    local makeMenu = {
+        {
+            header = Lang:t('menus.goback_header'),
+            icon = "fa-solid fa-angle-left",
+            params = {
+                event = 'qb-vehicleshop:client:homeMenu'
+            }
+        }
+    }
+    for k, v in pairs(QBCore.Shared.Vehicles) do
+        if type(QBCore.Shared.Vehicles[k]["shop"]) == "table" then
+            for _, shop in pairs(QBCore.Shared.Vehicles[k]["shop"]) do
+                if shop == insideShop then
+                    makmenu[v.brand] = v.brand
+                end
+            end
+        elseif QBCore.Shared.Vehicles[k]["shop"] == insideShop then
+            makmenu[v.brand] = v.brand
+        end
+    end
+    for k, v in pairs(makmenu) do
+        makeMenu[#makeMenu + 1] = {
+            header = v,
+            icon = "fa-solid fa-circle",
+            params = {
+                event = 'qb-vehicleshop:client:vehCategories',
+                args = {
+                    make = v
                 }
             }
         }
-        for k, v in pairs(QBCore.Shared.Vehicles) do
-            if type(QBCore.Shared.Vehicles[k]["shop"]) == "table" then
-                for _, shop in pairs(QBCore.Shared.Vehicles[k]["shop"]) do
-                    if shop == insideShop then
-                        makmenu[v.brand] = v.brand
-                    end
-                end
-            elseif QBCore.Shared.Vehicles[k]["shop"] == insideShop then
-                makmenu[v.brand] = v.brand
-            end
-        end
-        for k, v in pairs(makmenu) do
-            makeMenu[#makeMenu + 1] = {
-                header = v,
-                icon = "fa-solid fa-circle",
-                params = {
-                    event = 'qb-vehicleshop:client:vehCategories',
-                    args = {
-                        make = v
-                    }
-                }
-            }
-        end
-        exports['qb-menu']:openMenu(makeMenu, Config.SortAlphabetically, true)
     end
-)
+    exports['qb-menu']:openMenu(makeMenu, Config.SortAlphabetically, true)
+end)
 
 RegisterNetEvent('qb-vehicleshop:client:openFinance', function(data)
     local dialog = exports['qb-input']:ShowInput({
@@ -647,12 +658,13 @@ RegisterNetEvent('qb-vehicleshop:client:openFinance', function(data)
     })
     if dialog then
         if not dialog.downPayment or not dialog.paymentAmount then return end
-        TriggerServerEvent('qb-vehicleshop:server:financeVehicle', dialog.downPayment, dialog.paymentAmount, data.buyVehicle)
+        TriggerServerEvent('qb-vehicleshop:server:financeVehicle', dialog.downPayment, dialog.paymentAmount,
+            data.buyVehicle)
     end
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
-    TriggerEvent('animations:client:EmoteCommandStart', {"tablet2"})
+    TriggerEvent('animations:client:EmoteCommandStart', { "tablet2" })
     local dialog = exports['qb-input']:ShowInput({
         header = getVehBrand():upper() .. ' ' .. data.vehicle:upper() .. ' - $' .. data.price,
         submitText = Lang:t('menus.submit_text'),
@@ -679,15 +691,19 @@ RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
     })
     if dialog then
         if not dialog.downPayment or not dialog.paymentAmount or not dialog.playerid then return end
-        TriggerEvent('animations:client:EmoteCommandStart', {"c"})
-        TriggerServerEvent('qb-vehicleshop:server:sellfinanceVehicle', dialog.downPayment, dialog.paymentAmount, data.vehicle, dialog.playerid)
+        TriggerEvent('animations:client:EmoteCommandStart', { "c" })
+        TriggerServerEvent('qb-vehicleshop:server:sellfinanceVehicle', dialog.downPayment, dialog.paymentAmount,
+            data.vehicle, dialog.playerid)
     end
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:swapVehicle', function(data)
     local shopName = data.ClosestShop
     if Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].chosenVehicle ~= data.toVehicle then
-        local closestVehicle, closestDistance = QBCore.Functions.GetClosestVehicle(vector3(Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z))
+        local closestVehicle, closestDistance = QBCore.Functions.GetClosestVehicle(vector3(
+            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x,
+            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y,
+            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z))
         if closestVehicle == 0 then return end
         if closestDistance < 5 then DeleteEntity(closestVehicle) end
         while DoesEntityExist(closestVehicle) do
@@ -699,7 +715,9 @@ RegisterNetEvent('qb-vehicleshop:client:swapVehicle', function(data)
         while not HasModelLoaded(model) do
             Wait(50)
         end
-        local veh = CreateVehicle(model, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z, false, false)
+        local veh = CreateVehicle(model, Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.x,
+            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.y,
+            Config.Shops[shopName]["ShowroomVehicles"][data.ClosestVehicle].coords.z, false, false)
         while not DoesEntityExist(veh) do
             Wait(50)
         end
@@ -715,7 +733,8 @@ RegisterNetEvent('qb-vehicleshop:client:swapVehicle', function(data)
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:buyShowroomVehicle', function(vehicle, plate)
-    tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
+    tempShop =
+        insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
     QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
         local veh = NetToVeh(netId)
         exports['LegacyFuel']:SetFuel(veh, 100)
