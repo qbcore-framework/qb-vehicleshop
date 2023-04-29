@@ -425,15 +425,14 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
         local prevCoords = GetEntityCoords(PlayerPedId())
         tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
         QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-                local veh = NetToVeh(netId)
-                exports['LegacyFuel']:SetFuel(veh, 100)
-                SetVehicleNumberPlateText(veh, 'TESTDRIVE')
-                SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
-                TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
-                testDriveVeh = netId
-                QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
-            end, Config.Shops[tempShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
-            Config.Shops[tempShop]["TestDriveSpawn"], true)
+            local veh = NetToVeh(netId)
+            exports['LegacyFuel']:SetFuel(veh, 100)
+            SetVehicleNumberPlateText(veh, 'TESTDRIVE')
+            SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
+            TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
+            testDriveVeh = netId
+            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
+        end, Config.Shops[tempShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle, Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]["TestDriveTimeLimit"] * 60, prevCoords)
     else
@@ -713,8 +712,7 @@ RegisterNetEvent('qb-vehicleshop:client:swapVehicle', function(data)
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:buyShowroomVehicle', function(vehicle, plate)
-    tempShop =
-        insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
+    tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
     QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
         local veh = NetToVeh(netId)
         exports['LegacyFuel']:SetFuel(veh, 100)
