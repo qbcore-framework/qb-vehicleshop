@@ -98,8 +98,7 @@ local function getVehName()
 end
 
 local function getVehPrice()
-    return comma_value(QBCore.Shared.Vehicles
-        [Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["price"])
+    return comma_value(QBCore.Shared.Vehicles[Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle]["price"])
 end
 
 local function getVehBrand()
