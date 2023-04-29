@@ -160,8 +160,7 @@ local function startTestDriveTimer(testDriveTime, prevCoords)
                     SetEntityCoords(PlayerPedId(), prevCoords)
                     QBCore.Functions.Notify(Lang:t('general.testdrive_complete'))
                 end
-                drawTxt(Lang:t('general.testdrive_timer') .. math.ceil(testDriveTime - secondsLeft / 1000), 4, 0.5, 0.93,
-                    0.50, 255, 255, 255, 180)
+                drawTxt(Lang:t('general.testdrive_timer') .. math.ceil(testDriveTime - secondsLeft / 1000), 4, 0.5, 0.93, 0.50, 255, 255, 255, 180)
             end
             Wait(0)
         end
@@ -184,7 +183,7 @@ local function createVehZones(shopName, entity)
                     debugPoly = false,
                 })
         end
-        local combo = ComboZone:Create(zones, { name = "vehCombo", debugPoly = false })
+        local combo = ComboZone:Create(zones, {name = "vehCombo", debugPoly = false})
         combo:onPlayerInOut(function(isPointInside)
             if isPointInside then
                 if PlayerData and PlayerData.job and (PlayerData.job.name == Config.Shops[insideShop]['Job'] or Config.Shops[insideShop]['Job'] == 'none') then
@@ -204,8 +203,7 @@ local function createVehZones(shopName, entity)
                     label = Lang:t('general.vehinteraction'),
                     canInteract = function()
                         local closestShop = insideShop
-                        return closestShop and
-                            (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job'])
+                        return closestShop and (Config.Shops[closestShop]['Job'] == 'none' or PlayerData.job.name == Config.Shops[closestShop]['Job'])
                     end
                 },
             },
@@ -250,8 +248,7 @@ function createFreeUseShop(shopShape, name)
                                 isServer = true,
                                 event = 'qb-vehicleshop:server:buyShowroomVehicle',
                                 args = {
-                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle]
-                                        .chosenVehicle
+                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
                                 }
                             }
                         },
@@ -263,8 +260,7 @@ function createFreeUseShop(shopShape, name)
                                 event = 'qb-vehicleshop:client:openFinance',
                                 args = {
                                     price = getVehPrice(),
-                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle]
-                                        .chosenVehicle
+                                    buyVehicle = Config.Shops[insideShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle
                                 }
                             }
                         },
@@ -377,8 +373,8 @@ function Init()
     CreateThread(function()
         local financeZone = BoxZone:Create(Config.FinanceZone, 2.0, 2.0, {
             name = "vehicleshop_financeZone",
-            offset = { 0.0, 0.0, 0.0 },
-            scale = { 1.0, 1.0, 1.0 },
+            offset = {0.0, 0.0, 0.0},
+            scale = {1.0, 1.0, 1.0},
             minZ = Config.FinanceZone.z - 1,
             maxZ = Config.FinanceZone.z + 1,
             debugPoly = false,
@@ -441,7 +437,7 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
                 TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
                 testDriveVeh = netId
                 QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti',
-                    { testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"] }))
+                    {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
             end, Config.Shops[tempShop]["ShowroomVehicles"][ClosestVehicle].chosenVehicle,
             Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
@@ -466,7 +462,7 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
             TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
             testDriveVeh = netId
             QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti',
-                { testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"] }))
+                {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
         end, vehicle, Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]["TestDriveTimeLimit"] * 60, prevCoords)
@@ -520,7 +516,7 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function(data)
         end
     end
     if Config.HideCategorySelectForOne and tablelength(catmenu) == 1 then
-        TriggerEvent("qb-vehicleshop:client:openVehCats", { catName = firstvalue, make = data.make, onecat = true })
+        TriggerEvent("qb-vehicleshop:client:openVehCats", {catName = firstvalue, make = data.make, onecat = true})
         return
     end
     for k, v in pairs(catmenu) do
@@ -663,7 +659,7 @@ RegisterNetEvent('qb-vehicleshop:client:openFinance', function(data)
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
-    TriggerEvent('animations:client:EmoteCommandStart', { "tablet2" })
+    TriggerEvent('animations:client:EmoteCommandStart', {"tablet2"})
     local dialog = exports['qb-input']:ShowInput({
         header = getVehBrand():upper() .. ' ' .. data.vehicle:upper() .. ' - $' .. data.price,
         submitText = Lang:t('menus.submit_text'),
@@ -690,7 +686,7 @@ RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
     })
     if dialog then
         if not dialog.downPayment or not dialog.paymentAmount or not dialog.playerid then return end
-        TriggerEvent('animations:client:EmoteCommandStart', { "c" })
+        TriggerEvent('animations:client:EmoteCommandStart', {"c"})
         TriggerServerEvent('qb-vehicleshop:server:sellfinanceVehicle', dialog.downPayment, dialog.paymentAmount,
             data.vehicle, dialog.playerid)
     end
