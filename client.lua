@@ -269,8 +269,7 @@ function createFreeUseShop(shopShape, name)
                             txt = Lang:t('menus.swap_txt'),
                             icon = "fa-solid fa-arrow-rotate-left",
                             params = {
-                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or
-                                    'qb-vehicleshop:client:vehCategories',
+                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or 'qb-vehicleshop:client:vehCategories',
                             }
                         },
                     }
@@ -344,8 +343,7 @@ function createManagedShop(shopShape, name)
                             txt = Lang:t('menus.swap_txt'),
                             icon = "fa-solid fa-arrow-rotate-left",
                             params = {
-                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or
-                                    'qb-vehicleshop:client:vehCategories',
+                                event = Config.FilterByMake and 'qb-vehicleshop:client:vehMakes' or 'qb-vehicleshop:client:vehCategories',
                             }
                         },
                     }
@@ -396,9 +394,7 @@ function Init()
                 while not HasModelLoaded(model) do
                     Wait(0)
                 end
-                local veh = CreateVehicle(model, Config.Shops[k]["ShowroomVehicles"][i].coords.x,
-                    Config.Shops[k]["ShowroomVehicles"][i].coords.y, Config.Shops[k]["ShowroomVehicles"][i].coords.z,
-                    false, false)
+                local veh = CreateVehicle(model, Config.Shops[k]["ShowroomVehicles"][i].coords.x, Config.Shops[k]["ShowroomVehicles"][i].coords.y, Config.Shops[k]["ShowroomVehicles"][i].coords.z, false, false)
                 SetModelAsNoLongerNeeded(model)
                 SetVehicleOnGroundProperly(veh)
                 SetEntityInvincible(veh, true)
@@ -427,8 +423,7 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
     if not inTestDrive and ClosestVehicle ~= 0 then
         inTestDrive = true
         local prevCoords = GetEntityCoords(PlayerPedId())
-        tempShop =
-            insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
+        tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
         QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
                 local veh = NetToVeh(netId)
                 exports['LegacyFuel']:SetFuel(veh, 100)
@@ -452,8 +447,7 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
         inTestDrive = true
         local vehicle = data
         local prevCoords = GetEntityCoords(PlayerPedId())
-        tempShop =
-            insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
+        tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
         QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
             local veh = NetToVeh(netId)
             exports['LegacyFuel']:SetFuel(veh, 100)
@@ -461,8 +455,7 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
             SetEntityHeading(veh, Config.Shops[tempShop]["TestDriveSpawn"].w)
             TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
             testDriveVeh = netId
-            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti',
-                {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
+            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', {testdrivetime = Config.Shops[tempShop]["TestDriveTimeLimit"]}))
         end, vehicle, Config.Shops[tempShop]["TestDriveSpawn"], true)
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]["TestDriveTimeLimit"] * 60, prevCoords)
