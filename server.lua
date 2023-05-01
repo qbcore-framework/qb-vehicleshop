@@ -324,6 +324,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle purchased PDM (Cash)", "cyan", "**Player License:** `"..target.PlayerData.license.."`\n **Player Name:** `"..GetPlayerName(src).."`\n**Model:** `"..vehicle.."`\n**Plate No:** `"..plate.."`\n**Price:** `$"..vehiclePrice.."`\n**CID:** `"..cid.."`\n**SaleMan Commission:** `"..commission.."`\n**Boss Commission:** `"..boss.."`")
         elseif bank >= tonumber(vehiclePrice) then
             MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
                 target.PlayerData.license,
@@ -341,6 +342,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
+            TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle purchased PDM (Bank)", "cyan", "**Player License:** `"..target.PlayerData.license.."`\n **Player Name:** `"..GetPlayerName(src).."`\n**Model:** `"..vehicle.."`\n**Plate No:** `"..plate.."`\n**Price:** `$"..vehiclePrice.."`\n**CID:** `"..cid.."`\n**SaleMan Commission:** `"..commission.."`\n**Boss Commission:** `"..boss.."`")
         else
             TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
         end
