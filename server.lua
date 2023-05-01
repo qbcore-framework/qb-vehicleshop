@@ -306,6 +306,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
         local vehicle = data
         local vehiclePrice = QBCore.Shared.Vehicles[vehicle]['price']
         local commission = round(vehiclePrice * Config.Commission)
+        local bossmenu = round(vehiclePrice * Config.Commissionboss)
         local plate = GeneratePlate()
         if cash >= tonumber(vehiclePrice) then
             MySQL.insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, garage, state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', {
@@ -322,7 +323,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             target.Functions.RemoveMoney('cash', vehiclePrice, 'vehicle-bought-in-showroom')
             player.Functions.AddMoney('bank', commission)
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
-            exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
+            exports['qb-management']:AddMoney(player.PlayerData.job.name, bossmenu)
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
             TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle purchased PDM (Cash)", "cyan", "**Player License:** `"..target.PlayerData.license.."`\n **Player Name:** `"..GetPlayerName(src).."`\n**Model:** `"..vehicle.."`\n**Plate No:** `"..plate.."`\n**Price:** `$"..vehiclePrice.."`\n**CID:** `"..cid.."`\n**SaleMan Commission:** `"..commission.."`\n**Boss Commission:** `"..boss.."`")
         elseif bank >= tonumber(vehiclePrice) then
@@ -339,7 +340,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellShowroomVehicle', function(data, pla
             TriggerClientEvent('qb-vehicleshop:client:buyShowroomVehicle', target.PlayerData.source, vehicle, plate)
             target.Functions.RemoveMoney('bank', vehiclePrice, 'vehicle-bought-in-showroom')
             player.Functions.AddMoney('bank', commission)
-            exports['qb-management']:AddMoney(player.PlayerData.job.name, vehiclePrice)
+            exports['qb-management']:AddMoney(player.PlayerData.job.name, bossmenu)
             TriggerClientEvent('QBCore:Notify', src, Lang:t('success.earned_commission', {amount = comma_value(commission)}), 'success')
             TriggerClientEvent('QBCore:Notify', target.PlayerData.source, Lang:t('success.purchased'), 'success')
             TriggerEvent("qb-log:server:CreateLog", "vehicleshop", "Vehicle purchased PDM (Bank)", "cyan", "**Player License:** `"..target.PlayerData.license.."`\n **Player Name:** `"..GetPlayerName(src).."`\n**Model:** `"..vehicle.."`\n**Plate No:** `"..plate.."`\n**Price:** `$"..vehiclePrice.."`\n**CID:** `"..cid.."`\n**SaleMan Commission:** `"..commission.."`\n**Boss Commission:** `"..boss.."`")
