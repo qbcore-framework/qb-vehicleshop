@@ -8,7 +8,7 @@ local testDriveVeh, inTestDrive = 0, false
 local ClosestVehicle = 1
 local zones = {}
 local insideShop, tempShop = nil, nil
-
+CurrencySymbol = '$'
 -- Handlers
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = QBCore.Functions.GetPlayerData()
@@ -235,7 +235,9 @@ function createFreeUseShop(shopShape, name)
                         {
                             isMenuHeader = true,
                             icon = "fa-solid fa-circle-info",
-                            header = getVehBrand():upper() .. ' ' .. getVehName():upper() .. ' - $' .. getVehPrice(),
+                            header = getVehBrand():upper() .. ' ' .. getVehName():upper() .. ' - ' .. (CurrencySymbol) .. getVehPrice(),
+
+
                         },
                         {
                             header = Lang:t('menus.test_header'),
@@ -305,7 +307,7 @@ function createManagedShop(shopShape, name)
                         {
                             isMenuHeader = true,
                             icon = "fa-solid fa-circle-info",
-                            header = getVehBrand():upper() .. ' ' .. getVehName():upper() .. ' - $' .. getVehPrice(),
+                            header = getVehBrand():upper() .. ' ' .. getVehName():upper() .. ' - ' .. (CurrencySymbol) .. getVehPrice(),
                         },
                         {
                             header = Lang:t('menus.test_header'),
@@ -573,7 +575,7 @@ end)
 
 RegisterNetEvent('qb-vehicleshop:client:openFinance', function(data)
     local dialog = exports['qb-input']:ShowInput({
-        header = getVehBrand():upper() .. ' ' .. data.buyVehicle:upper() .. ' - $' .. data.price,
+        header = getVehBrand():upper() .. ' ' .. data.buyVehicle:upper() .. ' - ' .. (CurrencySymbol) .. data.price,
         submitText = Lang:t('menus.submit_text'),
         inputs = {
             {
@@ -599,7 +601,7 @@ end)
 RegisterNetEvent('qb-vehicleshop:client:openCustomFinance', function(data)
     TriggerEvent('animations:client:EmoteCommandStart', {"tablet2"})
     local dialog = exports['qb-input']:ShowInput({
-        header = getVehBrand():upper() .. ' ' .. data.vehicle:upper() .. ' - $' .. data.price,
+        header = getVehBrand():upper() .. ' ' .. data.vehicle:upper() .. ' - ' .. (CurrencySymbol) .. data.price,
         submitText = Lang:t('menus.submit_text'),
         inputs = {
             {
