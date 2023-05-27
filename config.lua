@@ -3,7 +3,7 @@ Config.UsingTarget = GetConvar('UseTarget', 'false') == 'true'
 Config.Commission = 0.10 -- Percent that goes to sales person from a full car sale 10%
 Config.FinanceCommission = 0.05 -- Percent that goes to sales person from a finance sale 5%
 Config.FinanceZone = vector3(-29.53, -1103.67, 26.42)-- Where the finance menu is located
-Config.PaymentWarning = 10 -- time in minutes that player has to make payment before repo
+Config.PaymentWarning = 60 -- time in minutes that player has to make payment before repo
 Config.PaymentInterval = 24 -- time in hours between payment being due
 Config.MinimumDown = 10 -- minimum percentage allowed down
 Config.MaximumPayments = 24 -- maximum payments allowed
