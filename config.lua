@@ -199,9 +199,9 @@ Config.Shops = {
             ['maxZ'] = 16.99, -- max height of the shop zone
             ['size'] = 7.0, -- size of the vehicles zones
         },
-        ['Job'] = 'none', -- Name of job or none
+        ['Job'] = 'airline', -- Name of job or none
         ['ShopLabel'] = 'Air Shop', -- Blip name
-        ['showBlip'] = true, -- true or false
+        ['showBlip'] = false, -- true or false
         ['blipSprite'] = 251, -- Blip sprite
         ['blipColor'] = 3, -- Blip color
         ['TestDriveTimeLimit'] = 1.5, -- Time in minutes until the vehicle gets deleted
