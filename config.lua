@@ -79,6 +79,38 @@ Config.Shops = {
             }
         },
     },
+    ['law'] = {
+        ['Type'] = 'free-use', -- no player interaction is required to purchase a car
+        ['Zone'] = {
+            ['Shape'] = {--polygon that surrounds the shop
+                vector2(437.64, -976.75),
+                vector2(425.02, -976.77),
+                vector2(424.07, -997.56),
+                vector2(430.08, -998.48),
+                vector2(437.01, -988.2)
+            },
+            ['minZ'] = 24.0, -- min height of the shop zone
+            ['maxZ'] = 28.0, -- max height of the shop zone
+            ['size'] = 2.75 -- size of the vehicles zones
+        },
+        ['Job'] = 'police', -- Name of job or none
+        ['ShopLabel'] = 'Law Enforcement', -- Blip name
+        ['showBlip'] = false, -- true or false
+        ['blipSprite'] = 326, -- Blip sprite
+        ['blipColor'] = 3, -- Blip color
+        ['TestDriveTimeLimit'] = 0.5, -- Time in minutes until the vehicle gets deleted
+        ['Location'] = vector3(434.33, -979.73, 25.14), -- Blip Location
+        ['ReturnLocation'] = vector3(432.72, -986.19, 25.14), -- Location to return vehicle, only enables if the vehicleshop has a job owned
+        ['VehicleSpawn'] = vector4(430.51, -986.63, 25.14, 211.51), -- Spawn location when vehicle is bought
+        ['TestDriveSpawn'] = vector4(430.51, -986.63, 25.14, 211.51), -- Spawn location for test drive
+        ['ShowroomVehicles'] = {
+            [1] = {
+                coords = vector4(434.34, -979.73, 25.14, 358.37), -- where the vehicle will spawn on display
+                defaultVehicle = '16exp', -- Default display vehicle
+                chosenVehicle = '16exp', -- Same as default but is dynamically changed when swapping vehicles
+            }
+        },
+    },
     ['luxury'] = {
         ['Type'] = 'managed', -- meaning a real player has to sell the car
         ['Zone'] = {
