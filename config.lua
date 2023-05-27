@@ -100,12 +100,12 @@ Config.Shops = {
         ['blipColor'] = 3, -- Blip color
         ['TestDriveTimeLimit'] = 0.5, -- Time in minutes until the vehicle gets deleted
         ['Location'] = vector3(434.33, -979.73, 25.14), -- Blip Location
-        ['ReturnLocation'] = vector3(432.72, -986.19, 25.14), -- Location to return vehicle, only enables if the vehicleshop has a job owned
+        ['ReturnLocation'] = vector3(464.35, -1016.52, 26.42), -- Location to return vehicle, only enables if the vehicleshop has a job owned
         ['VehicleSpawn'] = vector4(430.51, -986.63, 25.14, 211.51), -- Spawn location when vehicle is bought
         ['TestDriveSpawn'] = vector4(430.51, -986.63, 25.14, 211.51), -- Spawn location for test drive
         ['ShowroomVehicles'] = {
             [1] = {
-                coords = vector4(434.34, -979.73, 25.14, 358.37), -- where the vehicle will spawn on display
+                coords = vector4(434.34, -979.73, 22.4, 358.37), -- where the vehicle will spawn on display
                 defaultVehicle = '16exp', -- Default display vehicle
                 chosenVehicle = '16exp', -- Same as default but is dynamically changed when swapping vehicles
             }
