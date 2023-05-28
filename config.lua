@@ -105,7 +105,7 @@ Config.Shops = {
         ['TestDriveSpawn'] = vector4(430.51, -986.63, 25.14, 211.51), -- Spawn location for test drive
         ['ShowroomVehicles'] = {
             [1] = {
-                coords = vector4(434.34, -979.73, 22.4, 358.37), -- where the vehicle will spawn on display
+                coords = vector4(434.34, -979.73, 23.4, 358.37), -- where the vehicle will spawn on display
                 defaultVehicle = '16exp', -- Default display vehicle
                 chosenVehicle = '16exp', -- Same as default but is dynamically changed when swapping vehicles
             }
