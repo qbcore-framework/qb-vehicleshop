@@ -11,6 +11,7 @@ local Translations = {
         notworth = "Vehicle is not worth that much",
         downtoosmall = "Down payment too small",
         exceededmax = "Exceeded maximum payment amount",
+        exceededmin = "The minimum payment amount should be higher then 12",
         repossessed = "Your vehicle with plate %{plate} has been repossessed",
         buyerinfo = "Couldn\'t get buyer info",
         notinveh = "You must be in the vehicle you want to transfer",
