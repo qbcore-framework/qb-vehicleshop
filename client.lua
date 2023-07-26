@@ -531,7 +531,6 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function(data)
                 event = 'qb-vehicleshop:client:openVehCats',
                 args = {
                     catName = k,
-                    make = data.make
                 }
             }
         }
