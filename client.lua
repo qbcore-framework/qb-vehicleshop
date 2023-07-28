@@ -520,7 +520,7 @@ RegisterNetEvent('qb-vehicleshop:client:vehCategories', function(data)
         end
     end
     if Config.HideCategorySelectForOne and tablelength(catmenu) == 1 then
-        TriggerEvent("qb-vehicleshop:client:openVehCats", {catName = firstvalue, make = data.make, onecat = true})
+        TriggerEvent("qb-vehicleshop:client:openVehCats", {catName = firstvalue, onecat = true})
         return
     end
     for k, v in pairs(catmenu) do
