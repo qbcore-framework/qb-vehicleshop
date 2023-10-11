@@ -6,6 +6,7 @@ Config.FinanceZone = vector3(-29.53, -1103.67, 26.42)-- Where the finance menu i
 Config.PaymentWarning = 10 -- time in minutes that player has to make payment before repo
 Config.PaymentInterval = 24 -- time in hours between payment being due
 Config.MinimumDown = 10 -- minimum percentage allowed down
+Config.MinimumPayments = 12 -- minimum payments allowed
 Config.MaximumPayments = 24 -- maximum payments allowed
 Config.PreventFinanceSelling = false -- allow/prevent players from using /transfervehicle if financed
 Config.FilterByMake = false -- adds a make list before selecting category in shops

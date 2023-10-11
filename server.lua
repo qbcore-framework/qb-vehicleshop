@@ -244,6 +244,7 @@ RegisterNetEvent('qb-vehicleshop:server:financeVehicle', function(downPayment, p
     local minDown = tonumber(round((Config.MinimumDown / 100) * vehiclePrice))
     if downPayment > vehiclePrice then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notworth'), 'error') end
     if downPayment < minDown then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.downtoosmall'), 'error') end
+    if paymentAmount < Config.MinimumPayments then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.exceededmin'), 'error') end
     if paymentAmount > Config.MaximumPayments then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.exceededmax'), 'error') end
     local plate = GeneratePlate()
     local balance, vehPaymentAmount = calculateFinance(vehiclePrice, downPayment, paymentAmount)
@@ -371,6 +372,7 @@ RegisterNetEvent('qb-vehicleshop:server:sellfinanceVehicle', function(downPaymen
         local minDown = tonumber(round((Config.MinimumDown / 100) * vehiclePrice))
         if downPayment > vehiclePrice then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notworth'), 'error') end
         if downPayment < minDown then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.downtoosmall'), 'error') end
+        if paymentAmount < Config.MinimumPayments then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.exceededmin'), 'error') end
         if paymentAmount > Config.MaximumPayments then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.exceededmax'), 'error') end
         local commission = round(vehiclePrice * Config.Commission)
         local plate = GeneratePlate()
