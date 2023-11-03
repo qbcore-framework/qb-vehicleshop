@@ -429,17 +429,62 @@ end)
 RegisterNetEvent('qb-vehicleshop:server:checkFinance', function()
     local src = source
     local player = QBCore.Functions.GetPlayer(src)
+    local cash = player.PlayerData.money['cash']
+    local bank = player.PlayerData.money['bank']
     local query = 'SELECT * FROM player_vehicles WHERE citizenid = ? AND balance > 0 AND financetime < 1'
     local result = MySQL.query.await(query, {player.PlayerData.citizenid})
     if result[1] then
-        TriggerClientEvent('QBCore:Notify', src, Lang:t('general.paymentduein', {time = Config.PaymentWarning}))
-        Wait(Config.PaymentWarning * 60000)
-        local vehicles = MySQL.query.await(query, {player.PlayerData.citizenid})
-        for _, v in pairs(vehicles) do
-            local plate = v.plate
-            MySQL.query('DELETE FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
-            --MySQL.update('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {'REPO-'..v.citizenid, plate}) -- Use this if you don't want them to be deleted
-            TriggerClientEvent('QBCore:Notify', src, Lang:t('error.repossessed', {plate = plate}), 'error')
+        if not Config.FinanceAuto then 
+            TriggerClientEvent('QBCore:Notify', src, Lang:t('general.paymentduein', {time = Config.PaymentWarning}))
+            Wait(Config.PaymentWarning * 60000)
+            local vehicles = MySQL.query.await(query, {player.PlayerData.citizenid})
+            for _, v in pairs(vehicles) do
+                local plate = v.plate
+                MySQL.query('DELETE FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
+                --MySQL.update('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {'REPO-'..v.citizenid, plate}) -- Use this if you don't want them to be deleted
+                TriggerClientEvent('QBCore:Notify', src, Lang:t('error.repossessed', {plate = plate}), 'error')
+            end
+        else
+            -- Automatically take the money out from their account if they have it... If they do not have it, they have certain amount of time until it is repoed...
+            local allPaid = true;
+            for ind, row in pairs(result) do
+                local paid = false;
+                local paymentNeeded = result[ind].paymentamount;
+                local balance = result[ind].balance;
+                local payLeft = result[ind].paymentsleft;
+                local plate = result[ind].plate;
+                local timer = (Config.PaymentInterval * 60)
+                if (bank >= paymentNeeded) then 
+                    -- Payment via bank
+                    paid = true;
+                    player.Functions.RemoveMoney('bank', paymentNeeded);
+                    TriggerClientEvent('QBCore:Notify', src, Lang:t('general.finance_auto_paid_bank', {payment = paymentNeeded, plate = plate}));
+                elseif (cash >= paymentNeeded) and (Config.FinanceAutoCashPayAllowed) then 
+                    -- Payment via cash
+                    paid = true;
+                    player.Functions.RemoveMoney('cash', paymentNeeded);
+                    TriggerClientEvent('QBCore:Notify', src, Lang:t('general.finance_auto_paid_cash', {payment = paymentNeeded, plate = plate}));
+                end
+                if paid then 
+                    local newBalance, newPaymentsLeft, newPayment = calculateNewFinance(paymentNeeded, {balance = balance, paymentsLeft = payLeft});
+                    MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', {newBalance, newPayment, newPaymentsLeft, timer, plate});
+                end
+                -- They do not have enough money, let them know the vehicle may be revoked...
+                if not paid then 
+                    allPaid = false;
+                end
+            end
+            if not allPaid then 
+                TriggerClientEvent('QBCore:Notify', src, Lang:t('general.paymentduein', {time = Config.PaymentWarning}))
+                Wait(Config.PaymentWarning * 60000)
+                local vehicles = MySQL.query.await(query, {player.PlayerData.citizenid})
+                for _, v in pairs(vehicles) do
+                    local plate = v.plate
+                    MySQL.query('DELETE FROM player_vehicles WHERE plate = @plate', {['@plate'] = plate})
+                    --MySQL.update('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {'REPO-'..v.citizenid, plate}) -- Use this if you don't want them to be deleted
+                    TriggerClientEvent('QBCore:Notify', src, Lang:t('error.repossessed', {plate = plate}), 'error')
+                end
+            end
         end
     end
 end)
