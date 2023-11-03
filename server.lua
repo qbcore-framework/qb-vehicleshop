@@ -458,12 +458,12 @@ RegisterNetEvent('qb-vehicleshop:server:checkFinance', function()
                     -- Payment via bank
                     paid = true;
                     player.Functions.RemoveMoney('bank', paymentNeeded);
-                    TriggerClientEvent('QBCore:Notify', src, Lang:t('general.finance_auto_paid_bank', {payment = paymentNeeded}));
+                    TriggerClientEvent('QBCore:Notify', src, Lang:t('general.finance_auto_paid_bank', {payment = paymentNeeded, plate = plate}));
                 elseif (cash >= paymentNeeded) and (Config.FinanceAutoCashPayAllowed) then 
                     -- Payment via cash
                     paid = true;
                     player.Functions.RemoveMoney('cash', paymentNeeded);
-                    TriggerClientEvent('QBCore:Notify', src, Lang:t('general.finance_auto_paid_cash', {payment = paymentNeeded}));
+                    TriggerClientEvent('QBCore:Notify', src, Lang:t('general.finance_auto_paid_cash', {payment = paymentNeeded, plate = plate}));
                 end
                 if paid then 
                     local newBalance, newPaymentsLeft, newPayment = calculateNewFinance(paymentNeeded, {balance = balance, paymentsLeft = payLeft});
