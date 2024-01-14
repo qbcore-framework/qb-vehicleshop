@@ -2,7 +2,6 @@ Config = {}
 Config.UsingTarget = GetConvar('UseTarget', 'false') == 'true'
 Config.Commission = 0.10                              -- Percent that goes to sales person from a full car sale 10%
 Config.FinanceCommission = 0.05                       -- Percent that goes to sales person from a finance sale 5%
-Config.FinanceZone = vector3(-29.53, -1103.67, 26.42) -- Where the finance menu is located
 Config.PaymentWarning = 10                            -- time in minutes that player has to make payment before repo
 Config.PaymentInterval = 24                           -- time in hours between payment being due
 Config.MinimumDown = 10                               -- minimum percentage allowed down
@@ -21,7 +20,10 @@ Config.Shops = {
                 vector2(-58.26834487915, -1100.572265625),
                 vector2(-35.927803039551, -1109.0034179688),
                 vector2(-34.427627563477, -1108.5111083984),
-                vector2(-32.02657699585, -1101.5877685547),
+                vector2(-33.9, -1108.96),
+                vector2(-35.95, -1114.32),
+                vector2(-31.58, -1115.21),
+                vector2(-27.48, -1103.42),
                 vector2(-33.342102050781, -1101.0377197266),
                 vector2(-31.292987823486, -1095.3717041016)
             },
@@ -39,6 +41,7 @@ Config.Shops = {
         ['ReturnLocation'] = vector3(-44.74, -1082.58, 26.68),       -- Location to return vehicle, only enables if the vehicleshop has a job owned
         ['VehicleSpawn'] = vector4(-56.79, -1109.85, 26.43, 71.5),   -- Spawn location when vehicle is bought
         ['TestDriveSpawn'] = vector4(-56.79, -1109.85, 26.43, 71.5), -- Spawn location for test drive
+        ['FinanceZone'] = vector3(-29.53, -1103.67, 26.42),          -- Where the finance menu is located
         ['ShowroomVehicles'] = {
             [1] = {
                 coords = vector4(-45.65, -1093.66, 25.44, 69.5), -- where the vehicle will spawn on display
@@ -110,6 +113,7 @@ Config.Shops = {
         ['ReturnLocation'] = vector3(-1231.46, -349.86, 37.33),
         ['VehicleSpawn'] = vector4(-1231.46, -349.86, 37.33, 26.61),
         ['TestDriveSpawn'] = vector4(-1232.81, -347.99, 37.33, 23.28), -- Spawn location for test drive
+        ['FinanceZone'] = vector3(-1256.18, -368.23, 36.91),
         ['ShowroomVehicles'] = {
             [1] = {
                 coords = vector4(-1265.31, -354.44, 35.91, 205.08),
@@ -166,6 +170,7 @@ Config.Shops = {
         ['ReturnLocation'] = vector3(-714.34, -1343.31, 0.0),          -- Location to return vehicle, only enables if the vehicleshop has a job owned
         ['VehicleSpawn'] = vector4(-727.87, -1353.1, -0.17, 137.09),   -- Spawn location when vehicle is bought
         ['TestDriveSpawn'] = vector4(-722.23, -1351.98, 0.14, 135.33), -- Spawn location for test drive
+        ['FinanceZone'] = vector3(-729.86, -1319.13, 1.6),
         ['ShowroomVehicles'] = {
             [1] = {
                 coords = vector4(-727.05, -1326.59, 0.00, 229.5), -- where the vehicle will spawn on display
@@ -212,6 +217,7 @@ Config.Shops = {
         ['ReturnLocation'] = vector3(-1628.44, -3104.7, 13.94),          -- Location to return vehicle, only enables if the vehicleshop has a job owned
         ['VehicleSpawn'] = vector4(-1617.49, -3086.17, 13.94, 329.2),    -- Spawn location when vehicle is bought
         ['TestDriveSpawn'] = vector4(-1625.19, -3103.47, 13.94, 330.28), -- Spawn location for test drive
+        ['FinanceZone'] = vector3(-1619.52, -3152.64, 14.0),
         ['ShowroomVehicles'] = {
             [1] = {
                 coords = vector4(-1651.36, -3162.66, 12.99, 346.89), -- where the vehicle will spawn on display
@@ -239,16 +245,18 @@ Config.Shops = {
         ['Type'] = 'free-use', -- no player interaction is required to purchase a car
         ['Zone'] = {
             ['Shape'] = {      --polygon that surrounds the shop
-                vector2(872.23, -1173.5),
-                vector2(868.88, -1162.7),
-                vector2(900.91, -1156.54),
-                vector2(901.96, -1173.71),
-                vector2(883.59, -1174.47),
-                vector2(884.59, -1161.29),
-                vector2(890.06, -1155.0),
-                vector2(907.71, -1168.71)
+                vector2(856.91046142578, -1181.4660644532),
+                vector2(922.666015625, -1178.8934326172),
+                vector2(921.7074584961, -1153.4362792968),
+                vector2(894.02233886718, -1153.185180664),
+                vector2(894.08135986328, -1154.2734375),
+                vector2(887.91284179688, -1154.3431396484),
+                vector2(887.76403808594, -1155.2556152344),
+                vector2(872.04608154296, -1155.3488769532),
+                vector2(872.05163574218, -1139.1412353516),
+                vector2(857.6060180664, -1139.501953125)
             },
-            ['minZ'] = 23.0,                                         -- min height of the shop zone
+            ['minZ'] = 22.0,                                         -- min height of the shop zone
             ['maxZ'] = 28.0,                                         -- max height of the shop zone
             ['size'] = 5.75                                          -- size of the vehicles zones
         },
@@ -262,6 +270,7 @@ Config.Shops = {
         ['ReturnLocation'] = vector3(900.47, -1155.74, 25.16),       -- Location to return vehicle, only enables if the vehicleshop has a job owned
         ['VehicleSpawn'] = vector4(909.35, -1181.58, 25.55, 177.57), -- Spawn location when vehicle is bought
         ['TestDriveSpawn'] = vector4(867.65, -1192.4, 25.37, 95.72), -- Spawn location for test drive
+        ['FinanceZone'] = vector3(900.46, -1154.86, 25.16),
         ['ShowroomVehicles'] = {
             [1] = {
                 coords = vector4(890.84, -1170.92, 25.08, 269.58), -- where the vehicle will spawn on display
