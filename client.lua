@@ -622,7 +622,7 @@ RegisterNetEvent('qb-vehicleshop:client:vehMakes', function()
             makmenu[v.brand] = v.brand
         end
     end
-    for k, v in pairs(makmenu) do
+    for _, v in pairs(makmenu) do
         makeMenu[#makeMenu + 1] = {
             header = v,
             icon = 'fa-solid fa-circle',
