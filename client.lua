@@ -226,11 +226,11 @@ local function createVehZones(shopName, entity)
 end
 
 -- Zones
-function createFreeUseShop(shopShape, name)
+local function createFreeUseShop(shopShape, name)
     local zone = PolyZone:Create(shopShape, {
         name = name,
         minZ = shopShape.minZ,
-        maxZ = shopShape.maxZ
+        maxZ = shopShape.maxZ,
     })
 
     zone:onPlayerInOut(function(isPointInside)
@@ -296,11 +296,11 @@ function createFreeUseShop(shopShape, name)
     end)
 end
 
-function createManagedShop(shopShape, name)
+local function createManagedShop(shopShape, name)
     local zone = PolyZone:Create(shopShape, {
         name = name,
         minZ = shopShape.minZ,
-        maxZ = shopShape.maxZ
+        maxZ = shopShape.maxZ,
     })
 
     zone:onPlayerInOut(function(isPointInside)
@@ -370,6 +370,25 @@ function createManagedShop(shopShape, name)
     end)
 end
 
+local function createFinanceZone(coords, name)
+    local financeZone = BoxZone:Create(coords, 2.0, 2.0, {
+        name = 'vehicleshop_financeZone_' .. name,
+        offset = { 0.0, 0.0, 0.0 },
+        scale = { 1.0, 1.0, 1.0 },
+        minZ = coords.z - 1,
+        maxZ = coords.z + 1,
+        debugPoly = false,
+    })
+
+    financeZone:onPlayerInOut(function(isPointInside)
+        if isPointInside then
+            exports['qb-menu']:showHeader(financeMenu)
+        else
+            exports['qb-menu']:closeMenu()
+        end
+    end)
+end
+
 function Init()
     Initialized = true
     CreateThread(function()
@@ -379,25 +398,8 @@ function Init()
             elseif shop['Type'] == 'managed' then
                 createManagedShop(shop['Zone']['Shape'], name)
             end
+            if shop['FinanceZone'] then createFinanceZone(shop['FinanceZone'], name) end
         end
-    end)
-    CreateThread(function()
-        local financeZone = BoxZone:Create(Config.FinanceZone, 2.0, 2.0, {
-            name = 'vehicleshop_financeZone',
-            offset = { 0.0, 0.0, 0.0 },
-            scale = { 1.0, 1.0, 1.0 },
-            minZ = Config.FinanceZone.z - 1,
-            maxZ = Config.FinanceZone.z + 1,
-            debugPoly = false,
-        })
-
-        financeZone:onPlayerInOut(function(isPointInside)
-            if isPointInside then
-                exports['qb-menu']:showHeader(financeMenu)
-            else
-                exports['qb-menu']:closeMenu()
-            end
-        end)
     end)
     CreateThread(function()
         for k in pairs(Config.Shops) do
@@ -620,7 +622,7 @@ RegisterNetEvent('qb-vehicleshop:client:vehMakes', function()
             makmenu[v.brand] = v.brand
         end
     end
-    for k, v in pairs(makmenu) do
+    for _, v in pairs(makmenu) do
         makeMenu[#makeMenu + 1] = {
             header = v,
             icon = 'fa-solid fa-circle',
@@ -737,11 +739,11 @@ RegisterNetEvent('qb-vehicleshop:client:getVehicles', function()
     QBCore.Functions.TriggerCallback('qb-vehicleshop:server:getVehicles', function(vehicles)
         local ownedVehicles = {}
         for _, v in pairs(vehicles) do
-            if v.balance ~= 0 then
-                local name = QBCore.Shared.Vehicles[v.vehicle]['name']
+            local vehData = QBCore.Shared.Vehicles[v.vehicle]
+            if v.balance ~= 0 and vehData.shop == insideShop then
                 local plate = v.plate:upper()
                 ownedVehicles[#ownedVehicles + 1] = {
-                    header = name,
+                    header = vehData.name,
                     txt = Lang:t('menus.veh_platetxt') .. plate,
                     icon = 'fa-solid fa-car-side',
                     params = {
