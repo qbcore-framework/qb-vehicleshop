@@ -150,7 +150,7 @@ RegisterNetEvent('qb-vehicleshop:server:financePayment', function(paymentAmount,
                 player.Functions.RemoveMoney('cash', paymentAmount, 'financed vehicle')
                 MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', { newBalance, newPayment, newPaymentsLeft, timer, plate })
             elseif bank >= paymentAmount then
-                player.Functions.RemoveMoney('bank', paymentAmount, 'financed vehicle'))
+                player.Functions.RemoveMoney('bank', paymentAmount, 'financed vehicle')
                 MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', { newBalance, newPayment, newPaymentsLeft, timer, plate })
             else
                 TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
