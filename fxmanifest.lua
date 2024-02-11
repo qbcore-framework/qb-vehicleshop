@@ -1,7 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
-
-description 'qb-vehicleshop'
+lua54 'yes'
+author 'Kakarot'
+description 'Allows players to purchase vehicles and manage shops through a job'
 version '2.1.0'
 
 shared_script {
@@ -24,5 +25,3 @@ server_scripts {
     '@oxmysql/lib/MySQL.lua',
     'server.lua'
 }
-
-lua54 'yes'
