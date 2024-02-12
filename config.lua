@@ -273,22 +273,22 @@ Config.Shops = {
         ['FinanceZone'] = vector3(900.46, -1154.86, 25.16),
         ['ShowroomVehicles'] = {
             [1] = {
-                coords = vector4(890.84, -1170.92, 25.08, 269.58), -- where the vehicle will spawn on display
+                coords = vector4(890.84, -1170.92, 24.08, 269.58), -- where the vehicle will spawn on display
                 defaultVehicle = 'hauler',                         -- Default display vehicle
                 chosenVehicle = 'hauler',                          -- Same as default but is dynamically changed when swapping vehicles
             },
             [2] = {
-                coords = vector4(878.45, -1171.04, 25.05, 273.08),
+                coords = vector4(878.45, -1171.04, 24.05, 273.08),
                 defaultVehicle = 'phantom',
                 chosenVehicle = 'phantom'
             },
             [3] = {
-                coords = vector4(880.44, -1163.59, 24.87, 273.08),
+                coords = vector4(880.44, -1163.59, 23.87, 273.08),
                 defaultVehicle = 'mule',
                 chosenVehicle = 'mule'
             },
             [4] = {
-                coords = vector4(896.95, -1162.62, 24.98, 273.08),
+                coords = vector4(896.95, -1162.62, 23.98, 273.08),
                 defaultVehicle = 'mixer',
                 chosenVehicle = 'mixer'
             },
