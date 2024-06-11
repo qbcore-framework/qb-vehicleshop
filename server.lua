@@ -12,7 +12,7 @@ end)
 RegisterNetEvent('qb-vehicleshop:server:removePlayer', function(citizenid)
     if financetimer[citizenid] then
         local playTime = financetimer[citizenid]
-        local financetime = MySQL.query.await('SELECT * FROM player_vehicles WHERE citizenid = ?', { citizenid })
+        local financetime = MySQL.query.await('SELECT plate, balance, financetime FROM player_vehicles WHERE citizenid = ?', { citizenid })
         for _, v in pairs(financetime) do
             if v.balance >= 1 then
                 local newTime = (v.financetime - ((os.time() - playTime) / 60))
@@ -34,7 +34,7 @@ AddEventHandler('playerDropped', function()
         end
     end
     if license then
-        local vehicles = MySQL.query.await('SELECT * FROM player_vehicles WHERE license = ?', { license })
+        local vehicles = MySQL.query.await('SELECT plate, citizenid, balance, financetime FROM player_vehicles WHERE license = ?', { license })
         if vehicles then
             for _, v in pairs(vehicles) do
                 local playTime = financetimer[v.citizenid]
@@ -429,18 +429,20 @@ end)
 RegisterNetEvent('qb-vehicleshop:server:checkFinance', function()
     local src = source
     local player = QBCore.Functions.GetPlayer(src)
-    local query = 'SELECT * FROM player_vehicles WHERE citizenid = ? AND balance > 0 AND financetime < 1'
+    local query = 'SELECT plate FROM player_vehicles WHERE citizenid = ? AND balance > 0 AND financetime < 1'
     local result = MySQL.query.await(query, { player.PlayerData.citizenid })
     if result[1] then
         TriggerClientEvent('QBCore:Notify', src, Lang:t('general.paymentduein', { time = Config.PaymentWarning }))
         Wait(Config.PaymentWarning * 60000)
         local vehicles = MySQL.query.await(query, { player.PlayerData.citizenid })
+        local plates = {}
         for _, v in pairs(vehicles) do
-            local plate = v.plate
-            MySQL.query('DELETE FROM player_vehicles WHERE plate = @plate', { ['@plate'] = plate })
-            --MySQL.update('UPDATE player_vehicles SET citizenid = ? WHERE plate = ?', {'REPO-'..v.citizenid, plate}) -- Use this if you don't want them to be deleted
-            TriggerClientEvent('QBCore:Notify', src, Lang:t('error.repossessed', { plate = plate }), 'error')
+            plates[#plates + 1] = v.plate
+            TriggerClientEvent('QBCore:Notify', src, Lang:t('error.repossessed', { plate = v.plate }), 'error')
         end
+        local placeholders = string.rep('?,', #plates - 1) .. '?'
+        local deleteQuery = 'DELETE FROM player_vehicles WHERE plate IN (' .. placeholders .. ')'
+        MySQL.query(deleteQuery, plates)
     end
 end)
 
@@ -459,7 +461,7 @@ QBCore.Commands.Add('transfervehicle', Lang:t('general.command_transfervehicle')
     if not plate then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.vehinfo'), 'error') end
     local player = QBCore.Functions.GetPlayer(src)
     local target = QBCore.Functions.GetPlayer(buyerId)
-    local row = MySQL.single.await('SELECT * FROM player_vehicles WHERE plate = ?', { plate })
+    local row = MySQL.single.await('SELECT citizenid, balance FROM player_vehicles WHERE plate = ?', { plate })
     if Config.PreventFinanceSelling then
         if row.balance > 0 then return TriggerClientEvent('QBCore:Notify', src, Lang:t('error.financed'), 'error') end
     end
