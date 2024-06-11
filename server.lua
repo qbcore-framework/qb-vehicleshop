@@ -12,13 +12,11 @@ end)
 RegisterNetEvent('qb-vehicleshop:server:removePlayer', function(citizenid)
     if financetimer[citizenid] then
         local playTime = financetimer[citizenid]
-        local financetime = MySQL.query.await('SELECT plate, balance, financetime FROM player_vehicles WHERE citizenid = ?', { citizenid })
+        local financetime = MySQL.query.await('SELECT plate, financetime FROM player_vehicles WHERE citizenid = ? AND balance >= 1', { citizenid })
         for _, v in pairs(financetime) do
-            if v.balance >= 1 then
-                local newTime = (v.financetime - ((os.time() - playTime) / 60))
-                if newTime < 0 then newTime = 0 end
-                MySQL.update('UPDATE player_vehicles SET financetime = ? WHERE plate = ?', { math.ceil(newTime), v.plate })
-            end
+            local newTime = (v.financetime - ((os.time() - playTime) / 60))
+            if newTime < 0 then newTime = 0 end
+            MySQL.update('UPDATE player_vehicles SET financetime = ? WHERE plate = ?', { math.ceil(newTime), v.plate })
         end
     end
     financetimer[citizenid] = nil
@@ -34,11 +32,11 @@ AddEventHandler('playerDropped', function()
         end
     end
     if license then
-        local vehicles = MySQL.query.await('SELECT plate, citizenid, balance, financetime FROM player_vehicles WHERE license = ?', { license })
+        local vehicles = MySQL.query.await('SELECT plate, citizenid, financetime FROM player_vehicles WHERE license = ? AND balance >= 1', { license })
         if vehicles then
             for _, v in pairs(vehicles) do
                 local playTime = financetimer[v.citizenid]
-                if v.balance >= 1 and playTime then
+                if playTime then
                     local newTime = (v.financetime - ((os.time() - playTime) / 60))
                     if newTime < 0 then newTime = 0 end
                     MySQL.update('UPDATE player_vehicles SET financetime = ? WHERE plate = ?', { math.ceil(newTime), v.plate })
