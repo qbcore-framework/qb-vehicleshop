@@ -4,8 +4,11 @@ local financetimer = {}
 
 -- Handlers
 -- Store game time for player when they load
-RegisterNetEvent('qb-vehicleshop:server:addPlayer', function(citizenid)
-    financetimer[citizenid] = os.time()
+RegisterNetEvent('qb-vehicleshop:server:addPlayer', function()
+    local src = tonumber(source)
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    financetimer[Player.PlayerData.citizenid] = os.time()
 end)
 
 -- Deduct stored game time from player on logout

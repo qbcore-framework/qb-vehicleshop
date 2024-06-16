@@ -12,8 +12,7 @@ local insideShop, tempShop = nil, nil
 -- Handlers
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = QBCore.Functions.GetPlayerData()
-    local citizenid = PlayerData.citizenid
-    TriggerServerEvent('qb-vehicleshop:server:addPlayer', citizenid)
+    TriggerServerEvent('qb-vehicleshop:server:addPlayer')
     TriggerServerEvent('qb-vehicleshop:server:checkFinance')
     if not Initialized then Init() end
 end)
@@ -24,8 +23,7 @@ AddEventHandler('onResourceStart', function(resource)
     end
     if next(PlayerData) ~= nil and not Initialized then
         PlayerData = QBCore.Functions.GetPlayerData()
-        local citizenid = PlayerData.citizenid
-        TriggerServerEvent('qb-vehicleshop:server:addPlayer', citizenid)
+        TriggerServerEvent('qb-vehicleshop:server:addPlayer')
         TriggerServerEvent('qb-vehicleshop:server:checkFinance')
         Init()
     end
