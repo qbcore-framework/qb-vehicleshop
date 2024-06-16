@@ -106,8 +106,11 @@ end)
 
 -- Brute force vehicle deletion
 RegisterNetEvent('qb-vehicleshop:server:deleteVehicle', function(netId)
+    local src = tonumber(source)
     local vehicle = NetworkGetEntityFromNetworkId(netId)
-    DeleteEntity(vehicle)
+    if DoesEntityExist(vehicle) and NetworkGetEntityOwner(vehicle) == src then
+        DeleteEntity(vehicle)
+    end
 end)
 
 -- Sync vehicle for other players
