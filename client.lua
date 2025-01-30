@@ -471,7 +471,6 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
             SetVehicleNumberPlateText(veh, vehPlate)
             exports['LegacyFuel']:SetFuel(veh, 100)
             TriggerEvent('vehiclekeys:client:SetOwner', vehPlate)
-            local playerPed = PlayerPedId()
             TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
             SetVehicleEngineOn(veh, true, true, false)
             testDriveVeh = netId
