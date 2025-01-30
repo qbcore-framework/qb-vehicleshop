@@ -41,6 +41,22 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     PlayerData = {}
 end)
 
+local function CheckPlate(vehicle, plateToSet)
+    local vehiclePlate = promise.new()
+    CreateThread(function()
+        while true do
+            Wait(500)
+            if GetVehicleNumberPlateText(vehicle) == plateToSet then
+                vehiclePlate:resolve(true)
+                return
+            else
+                SetVehicleNumberPlateText(vehicle, plateToSet)
+            end
+        end
+    end)
+    return vehiclePlate
+end
+
 -- Static Headers
 local vehHeaderMenu = {
     {
@@ -439,15 +455,29 @@ RegisterNetEvent('qb-vehicleshop:client:TestDrive', function()
         inTestDrive = true
         local prevCoords = GetEntityCoords(PlayerPedId())
         tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
-        QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-            local veh = NetToVeh(netId)
+        QBCore.Functions.TriggerCallback('qb-vehicleshop:server:spawnvehicle', function(netId, properties, vehPlate)
+            local timeout = 5000
+            local startTime = GetGameTimer()
+            while not NetworkDoesNetworkIdExist(netId) do
+                Wait(10)
+                if GetGameTimer() - startTime > timeout then
+                    return
+                end
+            end
+            local veh = NetworkGetEntityFromNetworkId(netId)
+            NetworkRequestControlOfEntity(veh)
+            SetEntityAsMissionEntity(veh, true, true)
+            Citizen.InvokeNative(0xAD738C3085FE7E11, veh, true, true)
+            SetVehicleNumberPlateText(veh, vehPlate)
             exports['LegacyFuel']:SetFuel(veh, 100)
-            SetVehicleNumberPlateText(veh, 'TESTDRIVE')
-            SetEntityHeading(veh, Config.Shops[tempShop]['TestDriveSpawn'].w)
-            TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
+            TriggerEvent('vehiclekeys:client:SetOwner', vehPlate)
+            local playerPed = PlayerPedId()
+            TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+            SetVehicleEngineOn(veh, true, true, false)
             testDriveVeh = netId
-            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', { testdrivetime = Config.Shops[tempShop]['TestDriveTimeLimit'] }))
-        end, Config.Shops[tempShop]['ShowroomVehicles'][ClosestVehicle].chosenVehicle, Config.Shops[tempShop]['TestDriveSpawn'], true)
+            QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', { testdrivetime = Config.Shops[tempShop]['TestDriveTimeLimit'] }), "success")
+        end, 'TESTDRIVE', Config.Shops[tempShop]['ShowroomVehicles'][ClosestVehicle].chosenVehicle, Config.Shops[tempShop]['TestDriveSpawn'], true) 
+
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]['TestDriveTimeLimit'] * 60, prevCoords)
     else
@@ -461,15 +491,27 @@ RegisterNetEvent('qb-vehicleshop:client:customTestDrive', function(data)
         local vehicle = data
         local prevCoords = GetEntityCoords(PlayerPedId())
         tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
-        QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-            local veh = NetToVeh(netId)
+        QBCore.Functions.TriggerCallback('qb-vehicleshop:server:spawnvehicle', function(netId, properties, vehPlate)
+            local timeout = 5000
+            local startTime = GetGameTimer()
+            while not NetworkDoesNetworkIdExist(netId) do
+                Wait(10)
+                if GetGameTimer() - startTime > timeout then
+                    return
+                end
+            end
+            local veh = NetworkGetEntityFromNetworkId(netId)
+            NetworkRequestControlOfEntity(veh)
+            SetEntityAsMissionEntity(veh, true, true)
+            Citizen.InvokeNative(0xAD738C3085FE7E11, veh, true, true)
+            SetVehicleNumberPlateText(veh, vehPlate)
             exports['LegacyFuel']:SetFuel(veh, 100)
-            SetVehicleNumberPlateText(veh, 'TESTDRIVE')
-            SetEntityHeading(veh, Config.Shops[tempShop]['TestDriveSpawn'].w)
-            TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
+            TriggerEvent('vehiclekeys:client:SetOwner', vehPlate)
+            TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+            SetVehicleEngineOn(veh, true, true, false)
             testDriveVeh = netId
             QBCore.Functions.Notify(Lang:t('general.testdrive_timenoti', { testdrivetime = Config.Shops[tempShop]['TestDriveTimeLimit'] }))
-        end, vehicle, Config.Shops[tempShop]['TestDriveSpawn'], true)
+        end, 'TESTDRIVE', Config.Shops[tempShop]['ShowroomVehicles'][ClosestVehicle].chosenVehicle, Config.Shops[tempShop]['TestDriveSpawn'], true) 
         createTestDriveReturn()
         startTestDriveTimer(Config.Shops[tempShop]['TestDriveTimeLimit'] * 60, prevCoords)
     else
@@ -725,14 +767,16 @@ end)
 
 RegisterNetEvent('qb-vehicleshop:client:buyShowroomVehicle', function(vehicle, plate)
     tempShop = insideShop -- temp hacky way of setting the shop because it changes after the callback has returned since you are outside the zone
-    QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-        local veh = NetToVeh(netId)
+    QBCore.Functions.TriggerCallback('qb-vehicleshop:server:spawnvehicle', function(netId, properties, vehPlate)
+        while not NetworkDoesNetworkIdExist(netId) do Wait(10) end
+        local veh = NetworkGetEntityFromNetworkId(netId)
+        Citizen.Await(CheckPlate(veh, vehPlate))
+        QBCore.Functions.SetVehicleProperties(veh, properties)
         exports['LegacyFuel']:SetFuel(veh, 100)
-        SetVehicleNumberPlateText(veh, plate)
-        SetEntityHeading(veh, Config.Shops[tempShop]['VehicleSpawn'].w)
-        TriggerEvent('vehiclekeys:client:SetOwner', QBCore.Functions.GetPlate(veh))
-        TriggerServerEvent('qb-mechanicjob:server:SaveVehicleProps', QBCore.Functions.GetVehicleProperties(veh))
-    end, vehicle, Config.Shops[tempShop]['VehicleSpawn'], true)
+        TriggerEvent('vehiclekeys:client:SetOwner', vehPlate)
+        TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+        SetVehicleEngineOn(veh, true, true, false)
+    end, plate, vehicle, Config.Shops[tempShop]['VehicleSpawn'], true)
 end)
 
 RegisterNetEvent('qb-vehicleshop:client:getVehicles', function()
