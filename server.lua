@@ -2,6 +2,35 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local financetimer = {}
 
+local vehicleTypes = { -- https://docs.fivem.net/natives/?_0xA273060E
+    motorcycles = 'bike',
+    boats = 'boat',
+    helicopters = 'heli',
+    planes = 'plane',
+    submarines = 'submarine',
+    trailer = 'trailer',
+    train = 'train'
+}
+
+local function GetVehicleTypeByModel(model)
+    local vehicleData = QBCore.Shared.Vehicles[model]
+    if not vehicleData then return 'automobile' end
+    local category = vehicleData.category
+    local vehicleType = vehicleTypes[category]
+    return vehicleType or 'automobile'
+end
+
+QBCore.Functions.CreateCallback('qb-vehicleshop:server:spawnvehicle', function(source, cb, plate, vehicle, coords)
+    local vehType = QBCore.Shared.Vehicles[vehicle] and QBCore.Shared.Vehicles[vehicle].type or GetVehicleTypeByModel(vehicle)
+    local veh = CreateVehicleServerSetter(GetHashKey(vehicle), vehType, coords.x, coords.y, coords.z, coords.w)
+    local netId = NetworkGetNetworkIdFromEntity(veh)
+    SetVehicleNumberPlateText(veh, plate)
+    local vehProps = {}
+    local result = MySQL.rawExecute.await('SELECT mods FROM player_vehicles WHERE plate = ?', { plate })
+    if result and result[1] then vehProps = json.decode(result[1].mods) end
+    cb(netId, vehProps, plate)
+end)
+
 -- Handlers
 -- Store game time for player when they load
 RegisterNetEvent('qb-vehicleshop:server:addPlayer', function(citizenid)
