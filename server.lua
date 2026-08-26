@@ -44,13 +44,29 @@ local function GetVehicleTypeByModel(model)
 end
 
 QBCore.Functions.CreateCallback('qb-vehicleshop:server:spawnvehicle', function(source, cb, plate, vehicle, coords)
+    local src = source
+    local player = exports['qb-core']:GetPlayer(src)
+    if not player then cb(nil) return end
+
+    -- Verify the plate belongs to this player and the vehicle model matches
+    local citizenid = player.PlayerData.citizenid
+    local row = MySQL.query.await('SELECT mods, vehicle FROM player_vehicles WHERE plate = ? AND citizenid = ?', { plate, citizenid })
+    if not row or not row[1] then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notown'), 'error')
+        cb(nil)
+        return
+    end
+    if row[1].vehicle ~= vehicle then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notown'), 'error')
+        cb(nil)
+        return
+    end
+
     local vehType = sharedVehicles[vehicle] and sharedVehicles[vehicle].type or GetVehicleTypeByModel(vehicle)
     local veh = CreateVehicleServerSetter(GetHashKey(vehicle), vehType, coords.x, coords.y, coords.z, coords.w)
     local netId = NetworkGetNetworkIdFromEntity(veh)
     SetVehicleNumberPlateText(veh, plate)
-    local vehProps = {}
-    local result = MySQL.rawExecute.await('SELECT mods FROM player_vehicles WHERE plate = ?', { plate })
-    if result and result[1] then vehProps = json.decode(result[1].mods) end
+    local vehProps = row[1].mods and json.decode(row[1].mods) or {}
     cb(netId, vehProps, plate)
 end)
 
@@ -165,7 +181,13 @@ end)
 
 -- Brute force vehicle deletion
 RegisterNetEvent('qb-vehicleshop:server:deleteVehicle', function(netId)
+    local src = source
+    local player = exports['qb-core']:GetPlayer(src)
+    if not player then return end
+    -- Only allow deletion of entities whose network owner is the requesting player
     local vehicle = NetworkGetEntityFromNetworkId(netId)
+    if not DoesEntityExist(vehicle) then return end
+    if NetworkGetEntityOwner(vehicle) ~= src then return end
     DeleteEntity(vehicle)
 end)
 
@@ -196,21 +218,34 @@ end)
 RegisterNetEvent('qb-vehicleshop:server:financePayment', function(paymentAmount, vehData)
     local src = source
     local player = exports['qb-core']:GetPlayer(src)
+    if not player then return end
     local cash = player.PlayerData.money['cash']
     local bank = player.PlayerData.money['bank']
     local plate = vehData.vehiclePlate
     paymentAmount = tonumber(paymentAmount)
-    local minPayment = tonumber(vehData.paymentAmount)
+    if not paymentAmount or paymentAmount <= 0 then return end
+
+    -- Read authoritative finance data from DB, filtered by citizenid to prevent cross-player manipulation
+    local citizenid = player.PlayerData.citizenid
+    local dbRow = MySQL.query.await('SELECT balance, paymentamount, paymentsleft, financetime FROM player_vehicles WHERE plate = ? AND citizenid = ?', { plate, citizenid })
+    if not dbRow or not dbRow[1] then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notown'), 'error')
+        return
+    end
+    local dbData = dbRow[1]
+    local minPayment = tonumber(dbData.paymentamount)
     local timer = (Config.PaymentInterval * 60)
-    local newBalance, newPaymentsLeft, newPayment = calculateNewFinance(paymentAmount, vehData)
+    -- Build authoritative vehData from DB values for calculation
+    local serverVehData = { balance = dbData.balance, paymentsLeft = dbData.paymentsleft, paymentAmount = dbData.paymentamount }
+    local newBalance, newPaymentsLeft, newPayment = calculateNewFinance(paymentAmount, serverVehData)
     if newBalance > 0 then
         if player and paymentAmount >= minPayment then
             if cash >= paymentAmount then
                 player.RemoveMoney('cash', paymentAmount, 'financed vehicle')
-                MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', { newBalance, newPayment, newPaymentsLeft, timer, plate })
+                MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ? AND citizenid = ?', { newBalance, newPayment, newPaymentsLeft, timer, plate, citizenid })
             elseif bank >= paymentAmount then
                 player.RemoveMoney('bank', paymentAmount, 'financed vehicle')
-                MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', { newBalance, newPayment, newPaymentsLeft, timer, plate })
+                MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ? AND citizenid = ?', { newBalance, newPayment, newPaymentsLeft, timer, plate, citizenid })
             else
                 TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
             end
@@ -227,17 +262,26 @@ end)
 RegisterNetEvent('qb-vehicleshop:server:financePaymentFull', function(data)
     local src = source
     local player = exports['qb-core']:GetPlayer(src)
+    if not player then return end
     local cash = player.PlayerData.money['cash']
     local bank = player.PlayerData.money['bank']
-    local vehBalance = data.vehBalance
     local vehPlate = data.vehPlate
-    if player and vehBalance ~= 0 then
+
+    -- Read authoritative balance from DB, filtered by citizenid to prevent cross-player payoff
+    local citizenid = player.PlayerData.citizenid
+    local dbRow = MySQL.query.await('SELECT balance FROM player_vehicles WHERE plate = ? AND citizenid = ?', { vehPlate, citizenid })
+    if not dbRow or not dbRow[1] then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notown'), 'error')
+        return
+    end
+    local vehBalance = tonumber(dbRow[1].balance)
+    if player and vehBalance and vehBalance ~= 0 then
         if cash >= vehBalance then
             player.RemoveMoney('cash', vehBalance, 'paid off vehicle')
-            MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', { 0, 0, 0, 0, vehPlate })
+            MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ? AND citizenid = ?', { 0, 0, 0, 0, vehPlate, citizenid })
         elseif bank >= vehBalance then
             player.RemoveMoney('bank', vehBalance, 'paid off vehicle')
-            MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ?', { 0, 0, 0, 0, vehPlate })
+            MySQL.update('UPDATE player_vehicles SET balance = ?, paymentamount = ?, paymentsleft = ?, financetime = ? WHERE plate = ? AND citizenid = ?', { 0, 0, 0, 0, vehPlate, citizenid })
         else
             TriggerClientEvent('QBCore:Notify', src, Lang:t('error.notenoughmoney'), 'error')
         end
